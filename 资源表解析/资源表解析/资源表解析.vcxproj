@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ay_pe_tools.h" />
     <ClInclude Include="const.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="tools.h" />
@@ -147,6 +148,7 @@
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ay_pe_tools.cpp" />
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>

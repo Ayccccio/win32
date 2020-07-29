@@ -1,6 +1,7 @@
 #include "const.h"
 #include "resource.h"
 #include "tools.h"
+#include "ay_pe_tools.h"
 
 INT_PTR CALLBACK WindowProc(HWND hwnd,
 	UINT uMsg,
@@ -55,7 +56,7 @@ INT_PTR CALLBACK WindowProc(HWND hwnd,
 		}
 		case IDC_BUTTON_LOAD:
 		{
-
+			
 			GetDlgItemText(hwnd, IDC_EDIT_FILENAME, ptFileNameBuff, sizeof ptFileNameBuff);	//获取编辑框内容
 			if (*ptFileNameBuff == TEXT('\0'))
 			{
@@ -72,9 +73,12 @@ INT_PTR CALLBACK WindowProc(HWND hwnd,
 					SetDlgItemText(hwnd, IDC_STATIC_STATE, TEXT("加载失败"));
 				}
 			}
-			break;
+			return TRUE;
 		}
-		return TRUE;
+		case IDC_BUTTON_PARSE:
+		{
+			
+		}
 		}
 	}
 	return FALSE;
