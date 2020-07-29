@@ -2,11 +2,11 @@
 #include "tools.h"
 
 
-
-LRESULT CALLBACK  WindowProc(IN HWND hwnd,
-	IN UINT uMsg,
-	IN WPARAM wParam,
-	IN LPARAM lParam) 
+//事件过程函数
+LRESULT CALLBACK  WindowProc(IN HWND hwnd,		//消息对应的窗口句柄
+	IN UINT uMsg,		//消息类型
+	IN WPARAM wParam,	//消息类型附加信息
+	IN LPARAM lParam)	//消息类型附加信息
 {
 	switch (uMsg) {
 	case WM_DESTROY: {
@@ -16,16 +16,17 @@ LRESULT CALLBACK  WindowProc(IN HWND hwnd,
 		}
 
 	}
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);		//其他消息丢给window处理
 }
 
 
-int CALLBACK WinMain(_In_ HINSTANCE hInstance,
-	_In_ HINSTANCE hPrevInstance,
-	_In_ LPSTR lpCmdLine,
-	_In_ int nCmdShow) 
+//win32主程序入口
+int CALLBACK WinMain(_In_ HINSTANCE hInstance,		//窗口实例句柄,ImageBase
+	_In_ HINSTANCE hPrevInstance,					//上一个窗口的实例句柄,例:运行同一个相同的程序,第一个值就是NULL,第二个就会是第一个的hInstance
+	_In_ LPSTR lpCmdLine,							//cmd命令行参数
+	_In_ int nCmdShow)								//cmd命令行显示状态
 {
-	TCHAR className[] = TEXT("My First Window");
+	TCHAR className[] = TEXT("My First Window");	//设置窗口类名
 
 	//创建窗口类的对象
 	WNDCLASS wndClass = { 0 };
@@ -53,8 +54,8 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance,
 		NULL);						//附加数据一般为NULL
 
 
-	DWORD errorCode = GetLastError();
-	DbgPrintf("%d", errorCode);
+	DWORD errorCode = GetLastError();	//获取错误代码
+	DbgPrintf("%d", errorCode);			//打印错误代码
 
 
 	if (hwnd == NULL)				//判断是否创建成功
@@ -67,10 +68,10 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance,
 
 	//消息循环
 	MSG msg;
-	while (GetMessage(&msg,NULL,0,0))
+	while (GetMessage(&msg,NULL,0,0))	//获取MSG
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		TranslateMessage(&msg);		//转换MSG
+		DispatchMessage(&msg);		//转回给windows调用消息处理函数
 	}
 
 	return 0;
