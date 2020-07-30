@@ -1,7 +1,6 @@
 #include "const.h"
 #include "resource.h"
 #include "tools.h"
-#include "ay_pe_tools.h"
 
 INT_PTR CALLBACK WindowProc(HWND hwnd,
 	UINT uMsg,
@@ -83,6 +82,7 @@ INT_PTR CALLBACK WindowProc(HWND hwnd,
 	}
 	return FALSE;
 }
+
 
 int CALLBACK WinMain(
 	HINSTANCE hInstance,

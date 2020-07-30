@@ -52,3 +52,41 @@ DWORD getPEHeader(IN VOID* pFileBuff,
 // Parameter: OUT PIMAGE_SECTION_HEADER & pImageSectionHead 节表指针引用
 //************************************
 BOOL getPESectionHeader(IN VOID* pFileBuff, OUT PIMAGE_SECTION_HEADER& pImageSectionHead);
+
+
+//************************************
+// Method:    getPESectionHeader
+// FullName:  通过PE文件缓冲区指针获取最后个节表
+// Access:    public 
+// Returns:   BOOL 成功返回TRUE,失败返回FALSE
+// Qualifier:
+// Parameter: IN VOID * pFileBuff 缓冲区指针
+// Parameter: OUT PIMAGE_SECTION_HEADER & pImageSectionHead 节表指针引用
+//************************************
+BOOL getPELastSectionHeader(IN VOID* pFileBuff, OUT PIMAGE_SECTION_HEADER& pImageSectionHead);
+
+
+
+//************************************
+// Method:    foaToRva
+// FullName:  文件偏移地址转虚拟内存偏移地址
+// Access:    public 
+// Returns:   DWORD 成功返回虚拟内存偏移地址,失败返回0
+// Qualifier:
+// Parameter: IN VOID * pFileBuff PE文件缓冲区
+// Parameter: DWORD dwFoa 文件偏移地址
+//************************************
+DWORD foaToRva(IN VOID* pFileBuff, IN DWORD dwFoa);
+
+
+
+//************************************
+// Method:    rvaToFoa
+// FullName:  虚拟内存偏移转文件偏移
+// Access:    public 
+// Returns:   DWORD
+// Qualifier:
+// Parameter: IN VOID * pFileBuff 缓冲区指针
+// Parameter: IN DWORD dwRva 虚拟内存偏移
+//************************************
+DWORD rvaToFoa(IN VOID* pFileBuff, IN DWORD dwRva);

@@ -47,3 +47,4 @@ DWORD strrpl(PTCHAR resource, PTCHAR oldVal, PTCHAR newVal) {
 	}
 }
 
+

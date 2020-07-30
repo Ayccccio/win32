@@ -4,6 +4,7 @@
 #include <string.h>
 #include <tchar.h>
 #include <ShlWapi.h>
+#include "ay_pe_tools.h"
 #pragma comment(lib, "shlwapi");
 
 void __cdecl OutputDebugStringF(const TCHAR* format, ...);
