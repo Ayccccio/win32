@@ -186,6 +186,21 @@ DWORD rvaToFoa(IN VOID* pFileBuff, IN DWORD dwRva) {
 }
 
 
-VOID resourceParse(IN VOID* pFIleBuff, OUT PTCHAR ptStrBuff, DWORD dwBuffSize) {
+DWORD resourceParse(IN PIMAGE_RESOURCE_DIRECTORY pImageResourceDirectory, OUT PTCHAR ptStrBuff, DWORD dwBuffSize) {
+	PIMAGE_RESOURCE_DIRECTORY_ENTRY pImageResourceDirectoryEntry = NULL;
+	DWORD dwDirNum = 0;
+	int i = 0;
+	if (pImageResourceDirectory == NULL)	//判断资源表头是否有效
+		return 0;
+
+	//获取目录入口个数
+	dwDirNum =	pImageResourceDirectory->NumberOfIdEntries + pImageResourceDirectory->NumberOfNamedEntries;
+	if (!dwDirNum)
+		return 0;
+	while (i < dwDirNum)
+	{
+		pImageResourceDirectoryEntry = (PIMAGE_RESOURCE_DIRECTORY_ENTRY)((DWORD)pImageResourceDirectory + 16 + i * 8);
+
+	}
 
 }
