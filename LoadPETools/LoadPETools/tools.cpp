@@ -3,7 +3,6 @@
 #include "tools.h"
 
 
-
 void __cdecl OutputDebugStringF(const TCHAR* format, ...)
 {
 	va_list vlArgs;
@@ -17,4 +16,25 @@ void __cdecl OutputDebugStringF(const TCHAR* format, ...)
 	GlobalFree(strBuffer);
 	return;
 }
+
+
+DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames) {
+	LVCOLUMN lvCol = { 0 };
+	int i = 0;
+	PTCHAR ptTemp = ptColumNames;
+
+	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+
+	while (i < dwLenth)
+	{
+		lvCol.pszText = ptTemp;
+		lvCol.cx = 100;
+		lvCol.iSubItem = i;
+		ListView_InsertColumn(hListControl,i, &lvCol);
+		ptTemp += StrLen(ptTemp) + 1;
+		i++;
+	}
+	return i;
+}
+
 

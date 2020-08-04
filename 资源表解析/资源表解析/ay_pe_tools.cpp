@@ -186,31 +186,20 @@ DWORD rvaToFoa(IN VOID* pFileBuff, IN DWORD dwRva) {
 }
 
 
-DWORD recursionOfResourceParse(IN PIMAGE_RESOURCE_DIRECTORY pImageResourceDirectory, OUT PTCHAR ptStrBuff, IN DWORD dwBuffSize) {
-	DWORD dwType;
-	DWORD dwNumber;
+DWORD resourceParse(IN PIMAGE_RESOURCE_DIRECTORY pImageResourceDirectory, OUT PTCHAR ptStrBuff, DWORD dwBuffSize) {
 	PIMAGE_RESOURCE_DIRECTORY_ENTRY pImageResourceDirectoryEntry = NULL;
-
-	if (pImageResourceDirectory == NULL)
-		return 0;
-	dwType = pImageResourceDirectory->NumberOfIdEntries + pImageResourceDirectory->NumberOfNamedEntries;
-}
-
-DWORD resourceParse(IN VOID* pFIleBuff, OUT PTCHAR ptStrBuff,IN DWORD dwBuffSize) {
-	PIMAGE_OPTIONAL_HEADER pImageOptionalHead = NULL;
-	PIMAGE_RESOURCE_DIRECTORY pImageResourceDirectory = NULL;
-	PIMAGE_RESOURCE_DIRECTORY_ENTRY pImageResourceDirectoryEntry = NULL;
-	DWORD dwType;
-	DWORD dwNumber;
+	DWORD dwDirNum = 0;
 	int i = 0;
-	if (!getPEHeader(pFIleBuff, 0, 0, &pImageOptionalHead))
+	if (pImageResourceDirectory == NULL)	//判断资源表头是否有效
 		return 0;
-	pImageResourceDirectory = (PIMAGE_RESOURCE_DIRECTORY)pImageOptionalHead->DataDirectory[2].VirtualAddress;
-	dwType = pImageResourceDirectory->NumberOfIdEntries + pImageResourceDirectory->NumberOfNamedEntries;
-	pImageResourceDirectoryEntry = (PIMAGE_RESOURCE_DIRECTORY_ENTRY)((DWORD)pImageResourceDirectory + sizeof PIMAGE_RESOURCE_DIRECTORY);
-	while (i < dwType)
+
+	//获取目录入口个数
+	dwDirNum =	pImageResourceDirectory->NumberOfIdEntries + pImageResourceDirectory->NumberOfNamedEntries;
+	if (!dwDirNum)
+		return 0;
+	while (i < dwDirNum)
 	{
-		pImageResourceDirectoryEntry = (PIMAGE_RESOURCE_DIRECTORY_ENTRY)((DWORD)pImageResourceDirectoryEntry + i * sizeof IMAGE_RESOURCE_DIRECTORY_ENTRY);
+		pImageResourceDirectoryEntry = (PIMAGE_RESOURCE_DIRECTORY_ENTRY)((DWORD)pImageResourceDirectory + 16 + i * 8);
 
 	}
 

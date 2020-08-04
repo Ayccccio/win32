@@ -1,4 +1,4 @@
 #pragma once
-#include "windows.h"
+#include <windows.h>
 
-HINSTANCE hAPPInstance;
+HINSTANCE hAPPInterface;	//程序入口地址
