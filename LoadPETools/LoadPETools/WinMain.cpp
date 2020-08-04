@@ -3,6 +3,7 @@
 #include "resource.h"
 	
 
+	HWND hProcessListCtrl = NULL;
 
 INT_PTR CALLBACK WindowsProc(
 	HWND hwnd,
@@ -11,7 +12,7 @@ INT_PTR CALLBACK WindowsProc(
 	LPARAM lParam)
 {
 	HICON hIcon = NULL;
-	HWND hListCtrl = NULL;
+	HWND hMoudelListCtrl = NULL;
 	TCHAR ptColumNames[1024] = TEXT("进程名\0PID\0镜像地址\0镜像大小");
 
 	switch (uMsg)
@@ -28,10 +29,18 @@ INT_PTR CALLBACK WindowsProc(
 		SendMessage((HWND)hAPPInterface, WM_SETICON, ICON_BIG, (DWORD)hIcon);
 		SendMessage((HWND)hAPPInterface, WM_SETICON, ICON_SMALL, (DWORD)hIcon);
 
-		//列表通用对话框初始化表头
-		hListCtrl = GetDlgItem(hwnd, IDC_LIST_PROCESS);	//获取列表通用控件句柄
-		initListControlHeader(hListCtrl, 4, ptColumNames);
+		hProcessListCtrl = GetDlgItem(hwnd, IDC_LIST_PROCESS);	//获取进程列表通用控件句柄
+		hMoudelListCtrl = GetDlgItem(hwnd, IDC_LIST_MOUDEL);	//获取模块列表通用控件句柄
 
+		//设置进程列表通用对话框选中
+		SendMessage(hProcessListCtrl, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
+
+		//列表通用对话框初始化表头
+		initListControlHeader(hProcessListCtrl, 4, (PTCHAR)TEXT("进程名\0PID\0镜像地址\0镜像大小"));	//初始化进程列表通用控件表头
+		initListControlHeader(hMoudelListCtrl, 2, (PTCHAR)TEXT("模块名称\0模块地址"));	//初始化进程列表通用控件表头
+
+
+		addProcessListControlRow(hProcessListCtrl);
 		return TRUE;
 	}
 	case WM_COMMAND: 
@@ -41,6 +50,11 @@ INT_PTR CALLBACK WindowsProc(
 		case IDC_BUTTON_LOGOUT:
 		{
 			EndDialog(hwnd, 0);
+			break;
+		}
+		case IDC_BUTTON_ABOUT:
+		{
+			
 			break;
 		}
 		default:
@@ -71,4 +85,6 @@ INT_PTR CALLBACK WinMain(
 	InitCommonControlsEx(&icex);
 
 	DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MAIN), NULL, WindowsProc);
+
+	
 }
