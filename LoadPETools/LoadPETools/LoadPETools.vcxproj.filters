@@ -39,9 +39,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon1.ico">
-      <Filter>资源文件</Filter>
-    </Image>
     <Image Include="LoadPE.ico">
       <Filter>资源文件</Filter>
     </Image>

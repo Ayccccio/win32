@@ -37,9 +37,10 @@ void __cdecl OutputDebugStringF(const TCHAR* format, ...);
 // Qualifier:
 // Parameter: HWND hListControl 通用控件句柄
 // Parameter: DWORD dwLenth 列数
-// Parameter: PTCHAR & ptColumNames 列名缓冲区,列名必须连续存储,以结束符隔开
+// Parameter: PTCHAR ptColumNames 列名缓冲区,列名必须连续存储,以结束符隔开
+// Parameter: PWORD pdColWidths 所有列宽
 //************************************
-DWORD initListControlHeader(HWND hListControl, DWORD dwLenth, PTCHAR ptColumNames);
+DWORD initListControlHeader(HWND hListControl, DWORD dwLenth, PTCHAR ptColumNames, PWORD pdColWidths);
 
 
 //************************************

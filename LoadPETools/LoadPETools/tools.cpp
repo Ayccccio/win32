@@ -12,14 +12,14 @@ void __cdecl OutputDebugStringF(const TCHAR* format, ...)
 	va_start(vlArgs, format);
 	_vsntprintf(strBuffer, 4096 - 1, format, vlArgs);
 	va_end(vlArgs);
-	StrCat(strBuffer, TEXT("\n"));
+	//StrCat(strBuffer, TEXT("\n"));
 	OutputDebugString(strBuffer);
 	GlobalFree(strBuffer);
 	return;
 }
 
 
-DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames) {
+DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames,PWORD pdColWidths) {
 	LVCOLUMN lvCol = { 0 };
 	int i = 0;
 	PTCHAR ptTemp = ptColumNames;
@@ -29,11 +29,7 @@ DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames)
 	while (i < dwLenth)
 	{
 		lvCol.pszText = ptTemp;
-		if (i == 0)
-			lvCol.cx = 200;
-		else
-			lvCol.cx = 100;
-
+		lvCol.cx = pdColWidths[i];
 		lvCol.iSubItem = i;
 		ListView_InsertColumn(hListControl,i, &lvCol);
 		ptTemp += StrLen(ptTemp) + 1;
@@ -65,62 +61,106 @@ BOOL privilegeUp(HANDLE processHandle,LPCWSTR privilege) {
 	return FALSE;
 }
 
-DWORD addProcessListControlRow(HWND hListControl) {
+
+DWORD addListControlRow(HWND hListControl,DWORD dwRow, DWORD dwCol, PTCHAR ptText) {
+	DWORD ret;	//返回值
+	LV_ITEM lv = { 0 };
+	lv.mask = LVIF_TEXT;
+
+	lv.iItem = dwRow;
+	lv.iSubItem = dwCol;
+	lv.pszText = ptText;
+	DbgPrintf(TEXT("%s  "), lv.pszText);
+	if (dwCol == 4)
+	{
+		DbgPrintf(TEXT("\n"));
+	}
+	//SendMessage(hListControl, LVM_INSERTITEM, 0, (DWORD)&lv);
+
+	if (dwCol == 0)
+		ret = ListView_InsertItem(hListControl, &lv);
+	else
+		ret = ListView_SetItem(hListControl, &lv);
+	return ret;
+}
+
+DWORD addProcessListControlRow(HWND hProcessListCtrl) {
 
 	HANDLE hProcess;
 	PROCESSENTRY32 processInfo = {0};
 	BOOL bGetPro;
 	PROCESS_MEMORY_COUNTERS pmc = {0};
 
-	LV_ITEM lv = {0};
+	LV_ITEM lv = { 0 };
 	lv.mask = LVIF_TEXT;
+	
 	int i = 0;
-	TCHAR pszText[1024] = {0};
+	TCHAR ptText[1024] = {0};
 
 	BOOL j;
 
 	//提权
 	if (privilegeUp(GetCurrentProcess(), SE_DEBUG_NAME))
 	{
-		hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);
+		hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);	//获取进程快照
 		if (hProcess)
 		{
 			//初始化PROCESSENTRY32
 			processInfo.dwSize = sizeof PROCESSENTRY32;
 
-			bGetPro = Process32First(hProcess, &processInfo);
+			bGetPro = Process32First(hProcess, &processInfo);	//获取第一个进程
 			while (bGetPro)
 			{
-				//1
-				lv.iItem = i;
-				lv.iSubItem = 0;
-				lv.pszText = processInfo.szExeFile;
-				ListView_InsertItem(hListControl, &lv);
-				//SendMessage(hListControl, LVM_INSERTITEM, 0, (DWORD)&lv);
-				 
-				//2
-				lv.iItem = i;
-				lv.iSubItem = 1;
-				lv.pszText = pszText;
-				wcsprintf(pszText, TEXT("%d"), processInfo.th32ProcessID);
-				ListView_SetItem(hListControl, &lv);
+				//0
+				//wcsprintf(ptText, TEXT("%d"), i);
+				//addListControlRow(hListControl, i, 0, ptText);
 
-				//3
-				lv.iItem = i;
-				lv.iSubItem = 2;
-				lv.pszText = pszText;
-				wcsprintf(pszText, TEXT("%d"), processInfo.th32ModuleID);
-				ListView_SetItem(hListControl, &lv);
+				////1
+				//addListControlRow(hListControl, i, 1, processInfo.szExeFile);
 
-				//4
-				lv.iItem = i;
-				lv.iSubItem = 3;
-				GetProcessMemoryInfo(hProcess, &pmc, sizeof pmc);
-				wcsprintf(lv.pszText, TEXT("%d"), pmc.WorkingSetSize);
-				ListView_SetItem(hListControl, &lv);
+				////2
+				//wcsprintf(ptText, TEXT("%d"), processInfo.th32ProcessID);
+				//addListControlRow(hListControl, i, 2, ptText);
+
+				////3
+				//wcsprintf(ptText, TEXT("%d"), processInfo.th32ModuleID);
+				//addListControlRow(hListControl, i, 3, ptText);
+
+				////4
+				//wcsprintf(ptText, TEXT("%d"), pmc.WorkingSetSize);
+				//addListControlRow(hListControl, i, 4, ptText);
+
+				LV_ITEM vitem;
+
+				//初始化						
+				memset(&vitem, 0, sizeof(LV_ITEM));
+				vitem.mask = LVIF_TEXT;
+
+				vitem.pszText = (LPWSTR)TEXT("csrss.exe");
+				vitem.iItem = 0;
+				vitem.iSubItem = 0;
+				ListView_InsertItem(hProcessListCtrl, &vitem);
+				//SendMessage(hProcessListCtrl, LVM_INSERTITEM, 0, (DWORD)&vitem);
+
+				vitem.pszText = (LPWSTR)TEXT("448");
+				vitem.iItem = 0;
+				vitem.iSubItem = 1;
+				ListView_SetItem(hProcessListCtrl, &vitem);
+
+				vitem.pszText = (LPWSTR)TEXT("56590000");
+				vitem.iItem = 0;
+				vitem.iSubItem = 2;
+				ListView_SetItem(hProcessListCtrl, &vitem);
+
+				vitem.pszText = (LPWSTR)TEXT("000F0000");
+				vitem.iItem = 0;
+				vitem.iSubItem = 3;
+				ListView_SetItem(hProcessListCtrl, &vitem);
+
+				
 
 				i++;
-				bGetPro = Process32Next(hProcess, &processInfo);
+				bGetPro = Process32Next(hProcess, &processInfo);	//获取下一个进程
 			}
 		}
 		CloseHandle(hProcess);
