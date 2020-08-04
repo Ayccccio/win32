@@ -97,7 +97,7 @@ DWORD addProcessListControlRow(HWND hListControl) {
 				lv.pszText = processInfo.szExeFile;
 				ListView_InsertItem(hListControl, &lv);
 				//SendMessage(hListControl, LVM_INSERTITEM, 0, (DWORD)&lv);
-
+				 
 				//2
 				lv.iItem = i;
 				lv.iSubItem = 1;
