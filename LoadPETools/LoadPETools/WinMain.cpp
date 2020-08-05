@@ -13,7 +13,7 @@ INT_PTR CALLBACK WindowsProc(
 {
 	HICON hIcon = NULL;
 	HWND hMoudelListCtrl = NULL;
-	WORD pdProListCtrlColWidth[ProcessListControlColumNumber] = { 50,200,100,100,100 };
+	WORD pdProListCtrlColWidth[ProcessListControlColumNumber] = { 50,200,50,80,50,100,100 };
 	WORD pdMudListCtrlColWidth[MoudelListControlColumNumber] = { 200,200};
 
 	switch (uMsg)
@@ -34,58 +34,12 @@ INT_PTR CALLBACK WindowsProc(
 		hMoudelListCtrl = GetDlgItem(hwnd, IDC_LIST_MOUDEL);	//获取模块列表通用控件句柄
 
 		//设置进程列表通用对话框选中
-		SendMessage(hProcessListCtrl, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
+		SendMessage(hProcessListCtrl, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT | LVS_SORTASCENDING | LVS_SORTDESCENDING, LVS_EX_FULLROWSELECT | LVS_SORTASCENDING | LVS_SORTDESCENDING);
 
 		//列表通用对话框初始化表头
-		initListControlHeader(hProcessListCtrl, ProcessListControlColumNumber, (PTCHAR)TEXT("序号\0进程名\0PID\0镜像地址\0镜像大小"), pdProListCtrlColWidth);	//初始化进程列表通用控件表头
+		initListControlHeader(hProcessListCtrl, ProcessListControlColumNumber, (PTCHAR)TEXT("序号\0进程名\0PID\0父级PID\0线程数\0镜像地址\0镜像大小"), pdProListCtrlColWidth);	//初始化进程列表通用控件表头
 		initListControlHeader(hMoudelListCtrl, MoudelListControlColumNumber, (PTCHAR)TEXT("模块名称\0模块地址"),pdMudListCtrlColWidth);	//初始化进程列表通用控件表头
 
-		/*
-		LV_ITEM vitem;
-
-		//初始化						
-		memset(&vitem, 0, sizeof(LV_ITEM));
-		vitem.mask = LVIF_TEXT;
-
-		vitem.pszText = (LPWSTR)TEXT("csrss.exe");
-		vitem.iItem = 0;
-		vitem.iSubItem = 0;
-		ListView_InsertItem(hProcessListCtrl, &vitem);
-		//SendMessage(hProcessListCtrl, LVM_INSERTITEM, 0, (DWORD)&vitem);
-
-		vitem.pszText = (LPWSTR)TEXT("448");
-		vitem.iItem = 0;
-		vitem.iSubItem = 1;
-		ListView_SetItem(hProcessListCtrl, &vitem);
-
-		vitem.pszText = (LPWSTR)TEXT("56590000");
-		vitem.iItem = 0;
-		vitem.iSubItem = 2;
-		ListView_SetItem(hProcessListCtrl, &vitem);
-
-		vitem.pszText = (LPWSTR)TEXT("000F0000");
-		vitem.iItem = 0;
-		vitem.iSubItem = 3;
-		ListView_SetItem(hProcessListCtrl, &vitem);
-
-		vitem.pszText = (LPWSTR)TEXT("winlogon.exe");
-		vitem.iItem = 1;
-		vitem.iSubItem = 0;
-		ListView_InsertItem(hProcessListCtrl, &vitem);
-		//SendMessage(hProcessListCtrl, LVM_INSERTITEM, 0, (DWORD)&vitem);
-
-		vitem.pszText = (LPWSTR)TEXT("456");
-		vitem.iSubItem = 1;
-		ListView_SetItem(hProcessListCtrl, &vitem);
-
-		vitem.pszText = (LPWSTR)TEXT("10000000");
-		vitem.iSubItem = 2;
-		ListView_SetItem(hProcessListCtrl, &vitem);
-
-		vitem.pszText = (LPWSTR)TEXT("000045800");
-		vitem.iSubItem = 3;
-		ListView_SetItem(hProcessListCtrl, &vitem);
-		*/
 
 
 		addProcessListControlRow(hProcessListCtrl);
