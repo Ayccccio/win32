@@ -65,3 +65,8 @@ BOOL privilegeUp(HANDLE processHandle, LPCWSTR privilege);
 // Parameter: HWND hListControl 列表通用控件句柄
 //************************************
 DWORD addProcessListControlRow(HWND hListControl);
+
+
+
+
+DWORD addMoudelListControlRow(HWND hListControl);

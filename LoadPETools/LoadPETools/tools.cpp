@@ -70,12 +70,6 @@ DWORD addListControlRow(HWND hListControl,DWORD dwRow, DWORD dwCol, PTCHAR ptTex
 	lv.iItem = dwRow;
 	lv.iSubItem = dwCol;
 	lv.pszText = ptText;
-	DbgPrintf(TEXT("%s  "), lv.pszText);
-	if (dwCol == 4)
-	{
-		DbgPrintf(TEXT("\n"));
-	}
-	//SendMessage(hListControl, LVM_INSERTITEM, 0, (DWORD)&lv);
 
 	if (dwCol == 0)
 		ret = ListView_InsertItem(hListControl, &lv);
@@ -86,13 +80,17 @@ DWORD addListControlRow(HWND hListControl,DWORD dwRow, DWORD dwCol, PTCHAR ptTex
 
 DWORD addProcessListControlRow(HWND hListControl) {
 
+	HANDLE hProcessSnap;
 	HANDLE hProcess;
+	HMODULE hModule = 0;
 	PROCESSENTRY32 processInfo = {0};
 	BOOL bGetPro;
 	PROCESS_MEMORY_COUNTERS pmc = {0};
 
-	LV_ITEM lv = { 0 };
-	lv.mask = LVIF_TEXT;
+	DWORD dwModuleCount;
+
+	LVITEM lv = { 0 };
+	lv.mask = LVFIF_TEXT;
 	
 	int i = 0;
 	TCHAR ptText[259] = {0};
@@ -100,45 +98,107 @@ DWORD addProcessListControlRow(HWND hListControl) {
 	//提权
 	if (privilegeUp(GetCurrentProcess(), SE_DEBUG_NAME))
 	{
-		hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);	//获取进程快照
-		if (hProcess)
+		hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);	//获取进程快照
+		if (hProcessSnap)
 		{
 			//初始化PROCESSENTRY32
 			processInfo.dwSize = sizeof PROCESSENTRY32;
 
-			bGetPro = Process32First(hProcess, &processInfo);	//获取第一个进程
+			bGetPro = Process32First(hProcessSnap, &processInfo);	//获取第一个进程
 			while (bGetPro)
 			{
 				//0
-				//wcsprintf(ptText, TEXT("%d"), i);
-				//wcsprintf(ptText, TEXT("%d"), processInfo.th32ProcessID);
-				//addListControlRow(hListControl, 0, 0, ptText);
-				addListControlRow(hListControl, 0, 0, (PTCHAR)TEXT(""));
+				wcsprintf(ptText, TEXT("%d"), i);
+				//lv.pszText = ptText;
+				lv.pszText = (LPWSTR)TEXT("");			//经测试第一列放变量会出现其他列不显示的情况
+				lv.iItem = 0;							//经测试这里改成行索引会出现显示不全
+				lv.iSubItem = 0;
+				ListView_InsertItem(hListControl, &lv);	//经测试只能在第一列设置空文本
 
 				//1.进程名
-				addListControlRow(hListControl, 0, 1, processInfo.szExeFile);
+				lv.pszText = processInfo.szExeFile;
+				lv.iSubItem = 1;
+				ListView_SetItem(hListControl, &lv);
 
 				//2.PID
-				wcsprintf(ptText, TEXT("%d"), processInfo.th32ProcessID);
-				addListControlRow(hListControl, 0, 2, ptText);
+				wcsprintf(ptText, TEXT("%5d"), processInfo.th32ProcessID);
+				lv.pszText = ptText;
+				lv.iSubItem = 2;
+				ListView_SetItem(hListControl, &lv);
 
 				//3.父进程PID
-				wcsprintf(ptText, TEXT("%d"), processInfo.th32ParentProcessID);
-				addListControlRow(hListControl, 0, 3, ptText);
+				wcsprintf(ptText, TEXT("%5d"), processInfo.th32ParentProcessID);
+				lv.pszText = ptText;
+				lv.iSubItem = 3;
+				ListView_SetItem(hListControl, &lv);
 
 				//4.线程数
-				wcsprintf(ptText, TEXT("%d"), processInfo.cntThreads);
-				addListControlRow(hListControl, 0, 4, ptText);
+				wcsprintf(ptText, TEXT("%3d"), processInfo.cntThreads);
+				lv.pszText = ptText;
+				lv.iSubItem = 4;
+				ListView_SetItem(hListControl, &lv);
 
 				//5.模块地址
+				hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processInfo.th32ProcessID);
+				EnumProcessModules(hProcess, &hModule, sizeof hModule, &dwModuleCount);
+				wcsprintf(ptText, TEXT("%8X"), hModule);
+				lv.pszText = ptText;
+				lv.iSubItem = 5;
+				ListView_SetItem(hListControl, &lv);
 
 				//6.模块大小
+				GetProcessMemoryInfo(hProcess, &pmc, sizeof pmc);
+				wcsprintf(ptText, TEXT("%08X"), pmc.WorkingSetSize);
+				lv.pszText = ptText;
+				lv.iSubItem = 6;
+				ListView_SetItem(hListControl, &lv);
 
+				CloseHandle(hProcess);
 				i++;
-				bGetPro = Process32Next(hProcess, &processInfo);	//获取下一个进程
+				bGetPro = Process32Next(hProcessSnap, &processInfo);	//获取下一个进程
 			}
 		}
-		CloseHandle(hProcess);
+		CloseHandle(hProcessSnap);
 	}
 	return i;
+}
+
+DWORD addMoudelListControlRow(HWND hListControl) {
+	DWORD dwPid;
+	DWORD dwRow;
+
+	HANDLE hProcess;				//进程句柄
+	HMODULE pHMoudle[128] = { 0 };	//模块句柄集合
+	DWORD dwMoudleCount;			//模块句柄获得个数
+	int i = 0;		//循环变量
+
+	LVITEM lv = { 0 };		
+	lv.mask = LVIF_TEXT;
+	TCHAR ptText[259] = { 0 };		//文本缓冲区
+
+
+	//1.获取行号
+	dwPid = SendMessage(hListControl, LVM_GETNEXTITEM, -1, LVNI_SELECTED);
+
+	//2.获取PID
+	ListView_GetItemText(hListControl,dwPid,2,ptText,259);
+
+	//3.打开指定PID的进程
+	hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwPid);
+	EnumProcessModules(hProcess, pHMoudle, sizeof pHMoudle, &dwMoudleCount);
+	dwMoudleCount /= sizeof HMODULE;
+
+	//4.枚举进程模块
+	while (i < dwMoudleCount)
+	{
+
+		i++;
+	}
+
+	//5.添加模块信息到列表通用控件
+
+	return i;
+
+	
+
 }

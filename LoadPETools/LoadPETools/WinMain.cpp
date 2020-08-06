@@ -3,7 +3,6 @@
 #include "resource.h"
 	
 
-	HWND hProcessListCtrl = NULL;
 
 INT_PTR CALLBACK WindowsProc(
 	HWND hwnd,
@@ -11,10 +10,14 @@ INT_PTR CALLBACK WindowsProc(
 	WPARAM wParam,
 	LPARAM lParam)
 {
-	HICON hIcon = NULL;
-	HWND hMoudelListCtrl = NULL;
-	WORD pdProListCtrlColWidth[ProcessListControlColumNumber] = { 50,200,50,80,50,100,100 };
-	WORD pdMudListCtrlColWidth[MoudelListControlColumNumber] = { 200,200};
+	HICON hIcon = NULL;				//图标句柄
+	HWND hProcessListCtrl = NULL;	//进程列表通用控件句柄
+	HWND hMoudelListCtrl = NULL;	//模块列表通用控件句柄
+	WORD pdProListCtrlColWidth[ProcessListControlColumNumber] = { 0,200,50,80,50,100,100 };	//进程列表通用控件列的宽度
+	WORD pdMudListCtrlColWidth[MoudelListControlColumNumber] = { 200,200};					//模块列表通用控件列的宽度
+
+	NMHDR* pNmhdr;		//WM_NOTIFY 消息结构指针
+
 
 	switch (uMsg)
 	{
@@ -34,10 +37,10 @@ INT_PTR CALLBACK WindowsProc(
 		hMoudelListCtrl = GetDlgItem(hwnd, IDC_LIST_MOUDEL);	//获取模块列表通用控件句柄
 
 		//设置进程列表通用对话框选中
-		SendMessage(hProcessListCtrl, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT | LVS_SORTASCENDING | LVS_SORTDESCENDING, LVS_EX_FULLROWSELECT | LVS_SORTASCENDING | LVS_SORTDESCENDING);
+		SendMessage(hProcessListCtrl, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
 		//列表通用对话框初始化表头
-		initListControlHeader(hProcessListCtrl, ProcessListControlColumNumber, (PTCHAR)TEXT("序号\0进程名\0PID\0父级PID\0线程数\0镜像地址\0镜像大小"), pdProListCtrlColWidth);	//初始化进程列表通用控件表头
+		initListControlHeader(hProcessListCtrl, ProcessListControlColumNumber, (PTCHAR)TEXT(" \0进程名\0PID\0父级PID\0线程数\0镜像地址\0镜像大小"), pdProListCtrlColWidth);	//初始化进程列表通用控件表头
 		initListControlHeader(hMoudelListCtrl, MoudelListControlColumNumber, (PTCHAR)TEXT("模块名称\0模块地址"),pdMudListCtrlColWidth);	//初始化进程列表通用控件表头
 
 
@@ -66,7 +69,17 @@ INT_PTR CALLBACK WindowsProc(
 	}
 	case WM_NOTIFY:
 	{
-		
+		pNmhdr = (NMHDR*)lParam;
+		switch (wParam)
+		{
+		case IDC_LIST_PROCESS:
+		{
+			if (pNmhdr->code == NM_CLICK)
+			{
+				addMoudelListControlRow(hMoudelListCtrl);
+			}
+		}
+		}
 	}
 	}
 	return FALSE;
