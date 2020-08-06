@@ -44,15 +44,15 @@ DWORD initListControlHeader(HWND hListControl, DWORD dwLenth, PTCHAR ptColumName
 
 
 //************************************
-// Method:    privilegeUp
-// FullName:  提升进程权限
+// Method:    processTokenUp
+// FullName:  提升进程令牌权限
 // Access:    public 
 // Returns:   BOOL 成功返回真,失败返回假
 // Qualifier:
 // Parameter: HANDLE processHandle 进程句柄
 // Parameter: LPCWSTR privilege 权限类型
 //************************************
-BOOL privilegeUp(HANDLE processHandle, LPCWSTR privilege);
+BOOL processTokenUp(HANDLE processHandle, LPCWSTR privilege);
 
 
 
@@ -69,4 +69,4 @@ DWORD addProcessListControlRow(HWND hListControl);
 
 
 
-DWORD addMoudelListControlRow(HWND hListControl);
+DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl);

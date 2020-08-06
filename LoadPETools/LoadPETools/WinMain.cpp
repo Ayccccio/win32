@@ -14,7 +14,7 @@ INT_PTR CALLBACK WindowsProc(
 	HWND hProcessListCtrl = NULL;	//进程列表通用控件句柄
 	HWND hMoudelListCtrl = NULL;	//模块列表通用控件句柄
 	WORD pdProListCtrlColWidth[ProcessListControlColumNumber] = { 0,200,50,80,50,100,100 };	//进程列表通用控件列的宽度
-	WORD pdMudListCtrlColWidth[MoudelListControlColumNumber] = { 200,200};					//模块列表通用控件列的宽度
+	WORD pdMudListCtrlColWidth[MoudelListControlColumNumber] = {50, 200,100,100,100 };					//模块列表通用控件列的宽度
 
 	NMHDR* pNmhdr;		//WM_NOTIFY 消息结构指针
 
@@ -40,8 +40,8 @@ INT_PTR CALLBACK WindowsProc(
 		SendMessage(hProcessListCtrl, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
 		//列表通用对话框初始化表头
-		initListControlHeader(hProcessListCtrl, ProcessListControlColumNumber, (PTCHAR)TEXT(" \0进程名\0PID\0父级PID\0线程数\0镜像地址\0镜像大小"), pdProListCtrlColWidth);	//初始化进程列表通用控件表头
-		initListControlHeader(hMoudelListCtrl, MoudelListControlColumNumber, (PTCHAR)TEXT("模块名称\0模块地址"),pdMudListCtrlColWidth);	//初始化进程列表通用控件表头
+		initListControlHeader(hProcessListCtrl, ProcessListControlColumNumber, (PTCHAR)TEXT("序号\0进程名\0PID\0父级PID\0线程数\0镜像地址\0镜像大小"), pdProListCtrlColWidth);	//初始化进程列表通用控件表头
+		initListControlHeader(hMoudelListCtrl, MoudelListControlColumNumber, (PTCHAR)TEXT("序号\0模块名称\0模块地址\0模块大小\0模块入口"),pdMudListCtrlColWidth);	//初始化进程列表通用控件表头
 
 
 
@@ -74,9 +74,12 @@ INT_PTR CALLBACK WindowsProc(
 		{
 		case IDC_LIST_PROCESS:
 		{
+			hProcessListCtrl = GetDlgItem(hwnd, IDC_LIST_PROCESS);
 			if (pNmhdr->code == NM_CLICK)
 			{
-				addMoudelListControlRow(hMoudelListCtrl);
+				hMoudelListCtrl = GetDlgItem(hwnd, IDC_LIST_MOUDEL);
+				ListView_DeleteAllItems(hMoudelListCtrl);
+				addMoudelListControlRow(hProcessListCtrl,hMoudelListCtrl);
 			}
 		}
 		}
@@ -91,7 +94,7 @@ INT_PTR CALLBACK WinMain(
 	HINSTANCE hPrevInstance,
 	LPSTR     lpCmdLine,
 	int       nShowCmd) 
-{
+{ 
 	hAPPInterface = hInstance;
 
 	INITCOMMONCONTROLSEX icex;
