@@ -1,22 +1,6 @@
-#define  _CRT_SECURE_NO_WARNINGS
-
 #include "tools.h"
 
 
-
-void __cdecl OutputDebugStringF(const TCHAR* format, ...)
-{
-	va_list vlArgs;
-	PTCHAR strBuffer = (PTCHAR)GlobalAlloc(GPTR, 4096);
-
-	va_start(vlArgs, format);
-	_vsntprintf(strBuffer, 4096 - 1, format, vlArgs);
-	va_end(vlArgs);
-	//StrCat(strBuffer, TEXT("\n"));
-	OutputDebugString(strBuffer);
-	GlobalFree(strBuffer);
-	return;
-}
 
 
 DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames,PWORD pdColWidths) {
@@ -37,7 +21,6 @@ DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames,
 	}
 	return i;
 }
-
 
 BOOL processTokenUp(HANDLE processHandle,LPCWSTR privilege) {
 	//提权
@@ -60,7 +43,6 @@ BOOL processTokenUp(HANDLE processHandle,LPCWSTR privilege) {
 	}
 	return FALSE;
 }
-
 
 DWORD addListControlRow(HWND hListControl,DWORD dwRow, DWORD dwCol, PTCHAR ptText) {
 	DWORD ret;	//返回值
@@ -239,11 +221,29 @@ DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl) {
 
 		i++;
 	}
-
-
 	CloseHandle(hProcess);
 	return i;
+}
 
-	
+BOOL openFileName(PTCHAR ptText,DWORD dwBuffSize) {
+	OPENFILENAME ofn = { 0 };					//文件选择对话框结构
 
+	//初始化OPENFILENAME结构
+	ofn.lStructSize = sizeof OPENFILENAME;		//结构大小
+	ofn.hwndOwner = NULL;						//所属窗口的句柄
+	ofn.lpstrFilter = TEXT("PE文件\0*.exe");	//文件选择过滤器
+	ofn.nFilterIndex = 1;						//默认过滤器索引
+	ofn.lpstrFile = ptText;						//文件路径存放缓冲区
+	ofn.nMaxFile = dwBuffSize;					//文件路径存放缓冲区最大大小
+	ofn.lpstrInitialDir = NULL;					//文件选择对话框默认打开路径
+	ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;	//文件,路径必须存在,隐藏只读文件
+
+	return GetOpenFileName(&ofn);	//打开文件对话框
+}
+
+
+BOOL addPEWindowContent(HWND hwnd,PTCHAR ptFileName) {
+	PVOID pvFileBuff = NULL;
+	loadPEFile(ptFileName, pvFileBuff);
+	return TRUE;
 }

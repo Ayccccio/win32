@@ -40,7 +40,7 @@ INT_PTR CALLBACK WindowProc(HWND hwnd,
 			ofn.lStructSize = sizeof OPENFILENAME;		//结构大小
 			ofn.hwndOwner = NULL;						//所属窗口的句柄
 			ofn.lpstrFilter = TEXT("PE文件\0*.exe");	//文件选择过滤器
-			ofn.nFilterIndex = 1;						//默认过滤器索引
+			ofn.nFilterIndex = 1;						      //默认过滤器索引
 			ofn.lpstrFile = ptFileNameBuff;				//文件路径存放缓冲区
 			ofn.nMaxFile = sizeof ptFileNameBuff;		//文件路径存放缓冲区最大大小
 			ofn.lpstrInitialDir = NULL;					//文件选择对话框默认打开路径

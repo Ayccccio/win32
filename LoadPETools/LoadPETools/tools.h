@@ -1,21 +1,14 @@
 #pragma once
 #include <windows.h>
 #include <stdio.h>
-#include <tchar.h>
-#include <ShlWapi.h>
 #include <commctrl.h>
 #include <TlHelp32.h>
 #include <Psapi.h>
+#include <ShlWapi.h>
+#include "ay_pe.h"
+#include "ay_io.h"
 #pragma comment(lib, "shlwapi")
-#pragma comment(lib,"comctl32.lib")		
-
-void __cdecl OutputDebugStringF(const TCHAR* format, ...);
-
-#ifdef _DEBUG  
-#define DbgPrintf   OutputDebugStringF  
-#else  
-#define DbgPrintf  
-#endif 
+#pragma comment(lib,"comctl32.lib")	
 
 #ifdef UNICODE
 #define StrLen wcslen
@@ -28,6 +21,7 @@ void __cdecl OutputDebugStringF(const TCHAR* format, ...);
 #else
 #define wcsprintf sprintf
 #endif
+
 
 //************************************
 // Method:    initListControlHeader
@@ -68,5 +62,30 @@ DWORD addProcessListControlRow(HWND hListControl);
 
 
 
-
+//************************************
+// Method:    addMoudelListControlRow
+// FullName:  添加模块列表通用空间内容
+// Access:    public 
+// Returns:   DWORD
+// Qualifier:
+// Parameter: HWND & hProcessListCtrl 进程列表通用空间句柄
+// Parameter: HWND & hMoudelListCtrl 模块列表通用空间句柄
+//************************************
 DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl);
+
+
+
+//************************************
+// Method:    openFileName
+// FullName:  打开文件对话框
+// Access:    public 
+// Returns:   BOOL
+// Qualifier:
+// Parameter: PTCHAR ptText 文本缓冲区,用来存储文件对话框返回的文件路径
+// Parameter: DWORD dwBuffSize 文本缓冲区大小
+//************************************
+BOOL openFileName(PTCHAR ptText, DWORD dwBuffSize);
+
+
+
+BOOL addPEWindowContent(HWND hwnd, PTCHAR ptFileName);

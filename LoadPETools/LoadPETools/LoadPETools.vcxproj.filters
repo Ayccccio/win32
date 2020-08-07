@@ -21,15 +21,27 @@
     <ClCompile Include="tools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ay_io.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ay_pe.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="const.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="tools.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ay_io.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ay_pe.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="const.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
