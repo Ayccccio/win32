@@ -8,7 +8,7 @@
 extern HINSTANCE hAPPInterface;		//程序入口地址
 extern TCHAR ptText[MAX_PATH];		//文本缓冲区
 
-extern BOOL bOpenFileNameFlag;		//文件对话框是否打开,避免重复打开
+extern BOOL bFlag;					//作为开关,用于判断一些程序是否执行
 
 extern PVOID pFileBuff;				//文件缓冲区
 extern PIMAGE_FILE_HEADER pFileHeader;			//标准PE头

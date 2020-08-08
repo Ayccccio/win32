@@ -41,7 +41,10 @@ INT_PTR CALLBACK PEDialogProc(
 		}
 		case IDC_BUTTON_SUBSYS:
 		{
-		
+			if (selectSubSystem(hwnd))
+			{
+				SetDlgItemText(hwnd, IDC_EDIT_SUBSYS, ptText);
+			}
 			break;
 		}
 		default:
@@ -120,13 +123,13 @@ INT_PTR CALLBACK WindowsProc(
 		}
 		case IDC_BUTTON_PEEDIT:
 		{
-			if (!bOpenFileNameFlag)	//判断文件对话框是否打开
+			if (!bFlag)	//判断文件对话框是否打开
 			{
 				if (openFileName(ptText, sizeof ptText))	//文件对话框获取文件目录
 				{
 					DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEEDIT), hwnd, PEDialogProc);
 				}
-				bOpenFileNameFlag = FALSE;		//开关置0
+				bFlag = FALSE;		//开关置0
 			}
 			break;
 		}
@@ -180,13 +183,13 @@ INT_PTR CALLBACK WinMain(
 	//提权
 	processTokenUp(GetCurrentProcess(), SE_DEBUG_NAME);
 
-	if (!bOpenFileNameFlag)	//判断文件对话框是否打开
+	if (!bFlag)	//判断文件对话框是否打开
 	{
 		if (openFileName(ptText, sizeof ptText))	//文件对话框获取文件目录
 		{
 			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEEDIT), GetDlgItem((HWND)hAPPInterface, IDD_DIALOG_MAIN), PEDialogProc);
 		}
-		bOpenFileNameFlag = FALSE;		//开关置0
+		bFlag = FALSE;		//开关置0
 	}
 	//DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MAIN), NULL, WindowsProc);
 

@@ -112,3 +112,15 @@ BOOL addPEEditWinContent(HWND hwnd, PTCHAR ptFileName);
 // Parameter: HWND hwnd 需指定的父窗口句柄
 //************************************
 VOID showPEMagicWin(HWND hwnd);
+
+
+
+//************************************
+// Method:    selectSubSystem
+// FullName:  选择子系统标志值放全局变量中的ptText中
+// Access:    public 
+// Returns:   PTCHAR
+// Qualifier:
+// Parameter: HWND hwnd 用于指定父窗口句柄
+//************************************
+BOOL selectSubSystem(HWND hwnd);
