@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="ay_io.cpp" />
     <ClCompile Include="ay_pe.cpp" />
+    <ClCompile Include="const.cpp" />
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>

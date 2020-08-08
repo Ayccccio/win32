@@ -1,12 +1,13 @@
 #include "ay_pe.h"
 
 
-DWORD loadPEFile(IN PTCHAR ptFileName, OUT VOID*& pFileBuff) {
+DWORD loadPEFile(IN PTCHAR ptFileName, OUT PVOID* pFileBuff) {
 	FILE* pfFile;
 	DWORD dwFileSize;
 	DWORD dwReadSize;
+	PVOID ptemp;
 
-	freePeFileBuff(pFileBuff);	//释放缓冲区,避免重复申请内存空间
+	freePeFileBuff(*pFileBuff);	//释放缓冲区,避免重复申请内存空间
 	fileOpen(&pfFile, ptFileName, TEXT("rb+"));		//打开文件
 	if (!pfFile)
 	{
@@ -20,10 +21,10 @@ DWORD loadPEFile(IN PTCHAR ptFileName, OUT VOID*& pFileBuff) {
 	fseek(pfFile, 0, SEEK_SET);
 
 	//申请缓冲区内存空间
-	pFileBuff = malloc(dwFileSize);
+	ptemp = malloc(dwFileSize);
 
 	//判断是否申请成功
-	if (!pFileBuff)
+	if (!ptemp)
 	{
 		fclose(pfFile);
 		DbgPrintf(TEXT("fileBuff malloc fail"));
@@ -31,12 +32,13 @@ DWORD loadPEFile(IN PTCHAR ptFileName, OUT VOID*& pFileBuff) {
 	}
 
 	//读取文件二进制数据到缓冲区
-	dwReadSize = fread_s(pFileBuff, dwFileSize, dwFileSize, 1, pfFile) * dwFileSize;
+	dwReadSize = fread_s(ptemp, dwFileSize, dwFileSize, 1, pfFile) * dwFileSize;
 	fclose(pfFile);
+	*pFileBuff = ptemp;
 	return dwReadSize;
 }
 
-void freePeFileBuff(VOID* pFileBuff)
+void freePeFileBuff(PVOID pFileBuff)
 {
 	if (pFileBuff != NULL)
 	{
@@ -76,7 +78,7 @@ DWORD getPEHeader(IN VOID* pFileBuff,
 	}
 	if (pImageOptionalHead != NULL)
 	{
-		*pImageFileHead = (PIMAGE_FILE_HEADER)((DWORD)pFileBuff + pDosH->e_lfanew + 4 + IMAGE_SIZEOF_FILE_HEADER);
+		*pImageOptionalHead = (PIMAGE_OPTIONAL_HEADER)((DWORD)pFileBuff + pDosH->e_lfanew + 4 + IMAGE_SIZEOF_FILE_HEADER);
 		ret++;
 	}
 	return ret;

@@ -26,7 +26,7 @@
 // Parameter: IN PTCHAR ptFileName 文件路径
 // Parameter: OUT VOID * & pFileBuff 缓冲区指针,通过malloc,需free释放
 //************************************
-DWORD loadPEFile(IN PTCHAR ptFileName, OUT VOID*& pFileBuff);
+DWORD loadPEFile(IN PTCHAR ptFileName, OUT PVOID* pFileBuff);
 
 
 //************************************
@@ -37,7 +37,7 @@ DWORD loadPEFile(IN PTCHAR ptFileName, OUT VOID*& pFileBuff);
 // Qualifier:
 // Parameter: VOID * pFileBuff 缓冲区指针
 //************************************
-void freePeFileBuff(VOID* pFileBuff);
+void freePeFileBuff(PVOID pFileBuff);
 
 
 //************************************
@@ -53,7 +53,7 @@ void freePeFileBuff(VOID* pFileBuff);
 //************************************
 DWORD getPEHeader(IN VOID* pFileBuff,
 	OUT PIMAGE_DOS_HEADER* pImageDosHead,
-	OUT PIMAGE_FILE_HEADER* pImageFileHead,
+	OUT PIMAGE_FILE_HEADER* pImageFileHead, 
 	OUT PIMAGE_OPTIONAL_HEADER* pImageOptionalHead);
 
 

@@ -7,8 +7,11 @@
 #include <ShlWapi.h>
 #include "ay_pe.h"
 #include "ay_io.h"
+#include "const.h"
+#include "resource.h"
 #pragma comment(lib, "shlwapi")
 #pragma comment(lib,"comctl32.lib")	
+
 
 #ifdef UNICODE
 #define StrLen wcslen
@@ -88,4 +91,24 @@ BOOL openFileName(PTCHAR ptText, DWORD dwBuffSize);
 
 
 
-BOOL addPEWindowContent(HWND hwnd, PTCHAR ptFileName);
+//************************************
+// Method:    addPEEditWinContent
+// FullName:  添加PE编辑框内容
+// Access:    public 
+// Returns:   BOOL
+// Qualifier:
+// Parameter: HWND hwnd PE编辑窗口句柄
+// Parameter: PTCHAR ptFileName 文件名指针,用于加载PE文件到缓冲区
+//************************************
+BOOL addPEEditWinContent(HWND hwnd, PTCHAR ptFileName);
+
+
+//************************************
+// Method:    showPEMagicWin
+// FullName:  显示PE标记窗口
+// Access:    public 
+// Returns:   VOID
+// Qualifier:
+// Parameter: HWND hwnd 需指定的父窗口句柄
+//************************************
+VOID showPEMagicWin(HWND hwnd);

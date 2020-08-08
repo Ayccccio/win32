@@ -1,6 +1,21 @@
 #include "tools.h"
 
-
+INT_PTR CALLBACK peMagicWinProc(
+	HWND hwnd,
+	UINT uMsg,
+	WPARAM wParam,
+	LPARAM lParam) {
+	switch (uMsg)
+	{
+	case WM_CLOSE:
+	{
+		EndDialog(hwnd,0);
+		return TRUE;
+	}
+		
+	}
+	return FALSE;
+}
 
 
 DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames,PWORD pdColWidths) {
@@ -77,71 +92,67 @@ DWORD addProcessListControlRow(HWND hListControl) {
 	int i = 0;
 	TCHAR ptText[259] = {0};
 
-	//提权
-	if (processTokenUp(GetCurrentProcess(), SE_DEBUG_NAME))
+	hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);	//获取进程快照
+	if (hProcessSnap)
 	{
-		hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);	//获取进程快照
-		if (hProcessSnap)
+		//初始化PROCESSENTRY32
+		processInfo.dwSize = sizeof PROCESSENTRY32;
+
+		bGetPro = Process32First(hProcessSnap, &processInfo);	//获取第一个进程
+		while (bGetPro)
 		{
-			//初始化PROCESSENTRY32
-			processInfo.dwSize = sizeof PROCESSENTRY32;
+			//0
+			wcsprintf(ptText, TEXT("%03d"), i);
+			//lv.pszText = ptText;
+			lv.pszText = (LPWSTR)TEXT("");			//经测试第一列放变量会出现其他列不显示的情况
+			lv.iItem = 0;							//经测试这里改成行索引会出现显示不全
+			lv.iSubItem = 0;
+			ListView_InsertItem(hListControl, &lv);	//经测试只能在第一列设置空文本
 
-			bGetPro = Process32First(hProcessSnap, &processInfo);	//获取第一个进程
-			while (bGetPro)
-			{
-				//0
-				wcsprintf(ptText, TEXT("%03d"), i);
-				//lv.pszText = ptText;
-				lv.pszText = (LPWSTR)TEXT("");			//经测试第一列放变量会出现其他列不显示的情况
-				lv.iItem = 0;							//经测试这里改成行索引会出现显示不全
-				lv.iSubItem = 0;
-				ListView_InsertItem(hListControl, &lv);	//经测试只能在第一列设置空文本
+			//1.进程名
+			lv.pszText = processInfo.szExeFile;
+			lv.iSubItem = 1;
+			ListView_SetItem(hListControl, &lv);
 
-				//1.进程名
-				lv.pszText = processInfo.szExeFile;
-				lv.iSubItem = 1;
-				ListView_SetItem(hListControl, &lv);
+			//2.PID
+			wcsprintf(ptText, TEXT("%05d"), processInfo.th32ProcessID);
+			lv.pszText = ptText;
+			lv.iSubItem = 2;
+			ListView_SetItem(hListControl, &lv);
 
-				//2.PID
-				wcsprintf(ptText, TEXT("%05d"), processInfo.th32ProcessID);
-				lv.pszText = ptText;
-				lv.iSubItem = 2;
-				ListView_SetItem(hListControl, &lv);
+			//3.父进程PID
+			wcsprintf(ptText, TEXT("%05d"), processInfo.th32ParentProcessID);
+			lv.pszText = ptText;
+			lv.iSubItem = 3;
+			ListView_SetItem(hListControl, &lv);
 
-				//3.父进程PID
-				wcsprintf(ptText, TEXT("%05d"), processInfo.th32ParentProcessID);
-				lv.pszText = ptText;
-				lv.iSubItem = 3;
-				ListView_SetItem(hListControl, &lv);
+			//4.线程数
+			wcsprintf(ptText, TEXT("%03d"), processInfo.cntThreads);
+			lv.pszText = ptText;
+			lv.iSubItem = 4;
+			ListView_SetItem(hListControl, &lv);
 
-				//4.线程数
-				wcsprintf(ptText, TEXT("%03d"), processInfo.cntThreads);
-				lv.pszText = ptText;
-				lv.iSubItem = 4;
-				ListView_SetItem(hListControl, &lv);
+			//5.模块地址
+			hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processInfo.th32ProcessID);
+			EnumProcessModules(hProcess, &hModule, sizeof hModule, &dwModuleCount);
+			wcsprintf(ptText, TEXT("%08X"), hModule);
+			lv.pszText = ptText;
+			lv.iSubItem = 5;
+			ListView_SetItem(hListControl, &lv);
 
-				//5.模块地址
-				hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processInfo.th32ProcessID);
-				EnumProcessModules(hProcess, &hModule, sizeof hModule, &dwModuleCount);
-				wcsprintf(ptText, TEXT("%08X"), hModule);
-				lv.pszText = ptText;
-				lv.iSubItem = 5;
-				ListView_SetItem(hListControl, &lv);
+			//6.模块大小
+			GetProcessMemoryInfo(hProcess, &pmc, sizeof pmc);
+			wcsprintf(ptText, TEXT("%08X"), pmc.WorkingSetSize);
+			lv.pszText = ptText;
+			lv.iSubItem = 6;
+			ListView_SetItem(hListControl, &lv);
 
-				//6.模块大小
-				GetProcessMemoryInfo(hProcess, &pmc, sizeof pmc);
-				wcsprintf(ptText, TEXT("%08X"), pmc.WorkingSetSize);
-				lv.pszText = ptText;
-				lv.iSubItem = 6;
-				ListView_SetItem(hListControl, &lv);
-
-				CloseHandle(hProcess);
-				i++;
-				bGetPro = Process32Next(hProcessSnap, &processInfo);	//获取下一个进程
-			}
+			CloseHandle(hProcess);
+			i++;
+			bGetPro = Process32Next(hProcessSnap, &processInfo);	//获取下一个进程
 		}
-		CloseHandle(hProcessSnap);
 	}
+	CloseHandle(hProcessSnap);
 	return i;
 }
 
@@ -226,6 +237,7 @@ DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl) {
 }
 
 BOOL openFileName(PTCHAR ptText,DWORD dwBuffSize) {
+	bOpenFileNameFlag = TRUE;
 	OPENFILENAME ofn = { 0 };					//文件选择对话框结构
 
 	//初始化OPENFILENAME结构
@@ -242,8 +254,67 @@ BOOL openFileName(PTCHAR ptText,DWORD dwBuffSize) {
 }
 
 
-BOOL addPEWindowContent(HWND hwnd,PTCHAR ptFileName) {
-	PVOID pvFileBuff = NULL;
-	loadPEFile(ptFileName, pvFileBuff);
+BOOL addPEEditWinContent(HWND hwnd,PTCHAR ptFileName) {
+	DWORD dwFileSize;
+
+	dwFileSize = loadPEFile(ptFileName, &pFileBuff);		//加载PE文件到缓冲区
+	if (pFileBuff == NULL)
+		return FALSE;
+
+	if (getPEHeader(pFileBuff, 0, &pFileHeader, &pOptionalHeader))	//获取PE头
+	{
+		//入口点
+		wcsprintf(ptText, TEXT("%08X"), pOptionalHeader->AddressOfEntryPoint);
+		SetDlgItemText(hwnd, IDC_EDIT_ENTRY, ptText);
+
+		//基址
+		wcsprintf(ptText, TEXT("%08X"), pOptionalHeader->ImageBase);
+		SetDlgItemText(hwnd, IDC_EDIT_BASE, ptText);
+
+		//文件大小
+		wcsprintf(ptText, TEXT("%04X"), dwFileSize);
+		SetDlgItemText(hwnd, IDC_EDIT_FILESIZE, ptText);
+
+		//内存节块对齐
+		wcsprintf(ptText, TEXT("%08X"), pOptionalHeader->SectionAlignment);
+		SetDlgItemText(hwnd, IDC_EDIT_MENALIG, ptText);
+
+		//文件节块对齐
+		wcsprintf(ptText, TEXT("%08X"), pOptionalHeader->FileAlignment);
+		SetDlgItemText(hwnd, IDC_EDIT_FILEALIG, ptText);
+
+		//PE标志
+		wcsprintf(ptText, TEXT("%04X"), pOptionalHeader->Magic);
+		SetDlgItemText(hwnd, IDC_EDIT_PEMAGIC, ptText);
+
+		//子系统
+		wcsprintf(ptText, TEXT("%04X"), pOptionalHeader->Subsystem);
+		SetDlgItemText(hwnd, IDC_EDIT_SUBSYS, ptText);
+
+		//区段数目
+		wcsprintf(ptText, TEXT("%04X"), pFileHeader->NumberOfSections);
+		SetDlgItemText(hwnd, IDC_EDIT_SECTIONNUMBER, ptText);
+
+		//文件时间
+		wcsprintf(ptText, TEXT("%08X"), pFileHeader->TimeDateStamp);
+		SetDlgItemText(hwnd, IDC_EDIT_FILETIME, ptText);
+
+		//首部及节表大小
+		wcsprintf(ptText, TEXT("%08X"), pOptionalHeader->SizeOfHeaders);
+		SetDlgItemText(hwnd, IDC_EDIT_HEADSIZE, ptText);
+
+		//信息标志
+		wcsprintf(ptText, TEXT("%04X"), pFileHeader->Characteristics);
+		SetDlgItemText(hwnd, IDC_EDIT_CHARACTER, ptText);
+
+		//可选PE头大小
+		wcsprintf(ptText, TEXT("%04X"), sizeof IMAGE_OPTIONAL_HEADER);
+		SetDlgItemText(hwnd, IDC_EDIT_OPTIONSIZE, ptText);
+
+	}
 	return TRUE;
+}
+
+VOID showPEMagicWin(HWND hwnd) {
+	DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEMAGIC), hwnd, peMagicWinProc);
 }

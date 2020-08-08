@@ -5,6 +5,8 @@
 #define IDD_DIALOG_MAIN                 101
 #define IDI_ICON1                       104
 #define IDD_DIALOG_PEEDIT               105
+#define IDD_DIALOG_PEMAGIC              107
+#define IDD_DIALOG_SUBSYS               109
 #define IDC_BUTTON_PEEDIT               1001
 #define IDC_BUTTON_ABOUT                1002
 #define IDC_BUTTON_LOGOUT               1003
@@ -30,14 +32,32 @@
 #define IDC_BUTTON_PESTR                1026
 #define IDC_STATIC_PEMAGIC              1027
 #define IDC_BUTTON_PEMAGIC              1028
+#define IDC_BUTTON_UNKNOWN              1028
+#define IDC_BUTTON_NATIVE               1029
+#define IDC_BUTTON_GUI                  1030
+#define IDC_BUTTON_CUI                  1031
+#define IDC_BUTTON_OS2CUI               1032
+#define IDC_BUTTON_POSIXCUI             1033
+#define IDC_BUTTON_WIN9X                1034
+#define IDC_BUTTON_WINCE                1035
+#define IDC_BUTTON_EFIAPP               1036
+#define IDC_BUTTON_EFI_BOOT             1037
+#define IDC_BUTTON_EFI_RUNTIME          1038
+#define IDC_BUTTON_EFI_ROM              1039
+#define IDC_BUTTON_XBOX                 1040
+#define IDC_BUTTON_WIN_BOOT             1041
+#define IDC_BUTTON_XBOX_CODE            1042
+#define IDC_BUTTON_COMMIT               1043
+#define IDC_BUTTON_SUBSYSSAVE           1043
+#define IDC_STATIC_SUBSYS               1044
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        107
+#define _APS_NEXT_RESOURCE_VALUE        111
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1028
+#define _APS_NEXT_CONTROL_VALUE         1045
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

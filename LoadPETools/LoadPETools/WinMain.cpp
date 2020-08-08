@@ -3,7 +3,8 @@
 #include "tools.h"
 #include "resource.h"
 
-INT_PTR CALLBACK PEDialogProc(
+//PE编辑窗口消息处理回调函数
+INT_PTR CALLBACK PEDialogProc(		
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,
@@ -20,20 +21,45 @@ INT_PTR CALLBACK PEDialogProc(
 		
 		SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)ptTitle);
 
-		addPEWindowContent(hwnd,ptText);
+		addPEEditWinContent(hwnd,ptText);
 
-		return TRUE;
+		break;
 	}
 	case WM_CLOSE:
 	{
+		freePeFileBuff(pFileBuff);
 		EndDialog(hwnd, 0);
-		return TRUE;
+		break;
 	}
+	case WM_COMMAND:
+	{
+		switch (wParam)
+		{
+		case IDC_BUTTON_PEMAGIC: {
+			showPEMagicWin(hwnd);
+			break;
+		}
+		case IDC_BUTTON_SUBSYS:
+		{
+		
+			break;
+		}
+		default:
+			return FALSE;
+		return TRUE;
+		}
+		break;
+	}
+	default:
+		return FALSE;
+	return TRUE;
 	}
 	return FALSE;
 }
 
 
+
+//主窗口消息处理回调函数
 INT_PTR CALLBACK WindowsProc(
 	HWND hwnd,
 	UINT uMsg,
@@ -43,7 +69,6 @@ INT_PTR CALLBACK WindowsProc(
 	HICON hIcon = NULL;				//图标句柄
 	HWND hProcessListCtrl = NULL;	//进程列表通用控件句柄
 	HWND hMoudelListCtrl = NULL;	//模块列表通用控件句柄
-	HWND hMainDlg = NULL;			//主Dialog句柄
 
 	WORD pdProListCtrlColWidth[ProcessListControlColumNumber] = { 0,200,50,80,50,100,100 };		//进程列表通用控件列的宽度
 	WORD pdMudListCtrlColWidth[MoudelListControlColumNumber] = {50, 200,100,100,100 };			//模块列表通用控件列的宽度
@@ -56,7 +81,7 @@ INT_PTR CALLBACK WindowsProc(
 	case WM_CLOSE:
 	{
 		EndDialog(hwnd,0);
-		return 0;
+		return TRUE;
 	}
 	case WM_INITDIALOG:
 	{
@@ -75,8 +100,7 @@ INT_PTR CALLBACK WindowsProc(
 		initListControlHeader(hProcessListCtrl, ProcessListControlColumNumber, (PTCHAR)TEXT("序号\0进程名\0PID\0父级PID\0线程数\0镜像地址\0镜像大小"), pdProListCtrlColWidth);	//初始化进程列表通用控件表头
 		initListControlHeader(hMoudelListCtrl, MoudelListControlColumNumber, (PTCHAR)TEXT("序号\0模块名称\0模块地址\0模块大小\0模块入口"),pdMudListCtrlColWidth);	//初始化进程列表通用控件表头
 
-
-
+		//添加进程通用控件内容
 		addProcessListControlRow(hProcessListCtrl);
 		return TRUE;
 	}
@@ -96,14 +120,20 @@ INT_PTR CALLBACK WindowsProc(
 		}
 		case IDC_BUTTON_PEEDIT:
 		{
-			if (openFileName(ptText, sizeof ptText))	//文件对话框获取文件目录
+			if (!bOpenFileNameFlag)	//判断文件对话框是否打开
 			{
-				hMainDlg = GetDlgItem((HWND)hAPPInterface, IDD_DIALOG_MAIN);
-				DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEEDIT), hMainDlg, PEDialogProc);
+				if (openFileName(ptText, sizeof ptText))	//文件对话框获取文件目录
+				{
+					DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEEDIT), hwnd, PEDialogProc);
+				}
+				bOpenFileNameFlag = FALSE;		//开关置0
 			}
+			break;
 		}
-		}
+		default:
+			return FALSE;
 		return TRUE;
+		}
 	}
 	case WM_NOTIFY:
 	{
@@ -120,9 +150,15 @@ INT_PTR CALLBACK WindowsProc(
 				addMoudelListControlRow(hProcessListCtrl,hMoudelListCtrl);
 			}
 		}
+		return TRUE;
 		}
 	}
+	default:
+		return FALSE;
+	return TRUE;
 	}
+	
+		
 	return FALSE;
 }
 
@@ -135,12 +171,24 @@ INT_PTR CALLBACK WinMain(
 { 
 	hAPPInterface = hInstance;
 
+	//初始化通用控件
 	INITCOMMONCONTROLSEX icex;
 	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	icex.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&icex);
 
-	DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MAIN), NULL, WindowsProc);
+	//提权
+	processTokenUp(GetCurrentProcess(), SE_DEBUG_NAME);
+
+	if (!bOpenFileNameFlag)	//判断文件对话框是否打开
+	{
+		if (openFileName(ptText, sizeof ptText))	//文件对话框获取文件目录
+		{
+			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEEDIT), GetDlgItem((HWND)hAPPInterface, IDD_DIALOG_MAIN), PEDialogProc);
+		}
+		bOpenFileNameFlag = FALSE;		//开关置0
+	}
+	//DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MAIN), NULL, WindowsProc);
 
 	
 }
