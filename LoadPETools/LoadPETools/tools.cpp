@@ -153,6 +153,71 @@ INT_PTR CALLBACK selectSubSystemWinProc(
 }
 
 
+//PE编辑窗口消息处理回调函数
+INT_PTR CALLBACK PEDialogProc(
+	HWND hwnd,
+	UINT uMsg,
+	WPARAM wParam,
+	LPARAM lParam)
+{
+	TCHAR ptTitle[512] = { 0 };
+	HWND hPEDialog;
+
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+	{
+		wcsprintf(ptTitle, TEXT("[ PE编辑器 ] - %s"), ptText);
+
+		SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)ptTitle);
+
+		addPEEditWinContent(hwnd, ptText);
+
+		break;
+	}
+	case WM_CLOSE:
+	{
+		freePeFileBuff(pFileBuff);
+		EndDialog(hwnd, 0);
+		break;
+	}
+	case WM_COMMAND:
+	{
+		switch (wParam)
+		{
+		case IDC_BUTTON_PEMAGIC: {		//PE标志按钮单击
+			showPEMagicWin(hwnd);
+			break;
+		}
+		case IDC_BUTTON_SUBSYS:			//子系统按钮单击
+		{
+			if (selectSubSystem(hwnd))
+			{
+				SetDlgItemText(hwnd, IDC_EDIT_SUBSYS, ptText);
+			}
+			break;
+		}
+		case IDC_BUTTON_CHARACTER:		//信息标志按钮单击
+		{
+			selectCharacteristics(hwnd);
+			break;
+		}
+		default:
+			return FALSE;
+			return TRUE;
+		}
+		break;
+	}
+	default:
+		return FALSE;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
+
+
 DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames,PWORD pdColWidths) {
 	LVCOLUMN lvCol = { 0 };
 	int i = 0;
@@ -187,6 +252,7 @@ BOOL processTokenUp(HANDLE processHandle,LPCWSTR privilege) {
 			tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 			if (AdjustTokenPrivileges(handle, 0, &tkp, sizeof tkp, NULL, NULL))	//按权限结构体修改令牌权限
 			{
+				CloseHandle(handle);
 				return TRUE;
 			}
 		}
@@ -295,7 +361,7 @@ DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl) {
 
 	DWORD dwPid;		//进程PID
 	DWORD dwRow;		//进程列表通用控件点击的行数
-
+	
 	HANDLE hProcess;				//进程句柄
 	HMODULE phMoudles[512] = { 0 };	//模块句柄集合
 	DWORD dwMoudleCount = 0;		//模块句柄获得个数
@@ -315,11 +381,10 @@ DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl) {
 	dwPid = StrToLong(ptText);
 
 	//3.打开指定PID的进程
-	if (!processTokenUp(GetCurrentProcess(), SE_DEBUG_NAME))	//提权
-		return 0;
-
 	hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwPid);
-	EnumProcessModules(hProcess, phMoudles, sizeof phMoudles, &dwMoudleCount);
+
+	//4.枚举进程模块
+	EnumProcessModulesEx(hProcess, phMoudles, sizeof phMoudles, &dwMoudleCount, LIST_MODULES_ALL);
 
 	if (dwMoudleCount > sizeof phMoudles)
 		MessageBox(0, TEXT("缓冲区设置过小,部分DLL没显示出来"),TEXT("提示"),0);
@@ -330,7 +395,7 @@ DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl) {
 		dwMoudleCount = sizeof phMoudles / sizeof HMODULE;
 
 
-	//4.遍历进程模块,添加模块信息到列表通用控件
+	//5.遍历进程模块,添加模块信息到列表通用控件
 	while (i < dwMoudleCount)
 	{
 		//序号
@@ -387,7 +452,6 @@ BOOL openFileName(PTCHAR ptText,DWORD dwBuffSize) {
 
 	return GetOpenFileName(&ofn);	//打开文件对话框
 }
-
 
 BOOL addPEEditWinContent(HWND hwnd,PTCHAR ptFileName) {
 	DWORD dwFileSize;
@@ -454,9 +518,13 @@ VOID showPEMagicWin(HWND hwnd) {
 	DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEMAGIC), hwnd, peMagicWinProc);
 }
 
-
 BOOL selectSubSystem(HWND hwnd) {
 	GetDlgItemText(hwnd, IDC_EDIT_SUBSYS, ptText, sizeof ptText);
 	DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_SUBSYS), hwnd, selectSubSystemWinProc);
 	return bFlag;
+}
+
+BOOL selectCharacteristics(HWND hwnd)
+{
+
 }

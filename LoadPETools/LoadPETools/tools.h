@@ -26,6 +26,13 @@
 #endif
 
 
+//PE编辑窗口消息处理回调函数
+INT_PTR CALLBACK PEDialogProc(
+	HWND hwnd,
+	UINT uMsg,
+	WPARAM wParam,
+	LPARAM lParam);
+
 //************************************
 // Method:    initListControlHeader
 // FullName:  初始化列表通用控件表头
@@ -124,3 +131,7 @@ VOID showPEMagicWin(HWND hwnd);
 // Parameter: HWND hwnd 用于指定父窗口句柄
 //************************************
 BOOL selectSubSystem(HWND hwnd);
+
+
+
+BOOL selectCharacteristics(HWND hwnd);

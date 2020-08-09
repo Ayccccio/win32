@@ -3,63 +3,6 @@
 #include "tools.h"
 #include "resource.h"
 
-//PE编辑窗口消息处理回调函数
-INT_PTR CALLBACK PEDialogProc(		
-	HWND hwnd,
-	UINT uMsg,
-	WPARAM wParam,
-	LPARAM lParam)
-{
-	TCHAR ptTitle[512] = { 0 };
-	HWND hPEDialog;
-
-	switch (uMsg)
-	{
-	case WM_INITDIALOG:
-	{
-		wcsprintf(ptTitle, TEXT("[ PE编辑器 ] - %s"), ptText);
-		
-		SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)ptTitle);
-
-		addPEEditWinContent(hwnd,ptText);
-
-		break;
-	}
-	case WM_CLOSE:
-	{
-		freePeFileBuff(pFileBuff);
-		EndDialog(hwnd, 0);
-		break;
-	}
-	case WM_COMMAND:
-	{
-		switch (wParam)
-		{
-		case IDC_BUTTON_PEMAGIC: {
-			showPEMagicWin(hwnd);
-			break;
-		}
-		case IDC_BUTTON_SUBSYS:
-		{
-			if (selectSubSystem(hwnd))
-			{
-				SetDlgItemText(hwnd, IDC_EDIT_SUBSYS, ptText);
-			}
-			break;
-		}
-		default:
-			return FALSE;
-		return TRUE;
-		}
-		break;
-	}
-	default:
-		return FALSE;
-	return TRUE;
-	}
-	return FALSE;
-}
-
 
 
 //主窗口消息处理回调函数
@@ -166,7 +109,7 @@ INT_PTR CALLBACK WindowsProc(
 }
 
 
-INT_PTR CALLBACK WinMain(
+int CALLBACK WinMain(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPSTR     lpCmdLine,
@@ -185,10 +128,11 @@ INT_PTR CALLBACK WinMain(
 
 	if (!bFlag)	//判断文件对话框是否打开
 	{
-		if (openFileName(ptText, sizeof ptText))	//文件对话框获取文件目录
-		{
+		//if (openFileName(ptText, sizeof ptText))	//文件对话框获取文件目录
+		//{
+			wcsprintf(ptText, TEXT("C:\\Users\\Ayccc\\Desktop\\PETool 1.0.0.5.exe"));
 			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEEDIT), GetDlgItem((HWND)hAPPInterface, IDD_DIALOG_MAIN), PEDialogProc);
-		}
+		//}
 		bFlag = FALSE;		//开关置0
 	}
 	//DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MAIN), NULL, WindowsProc);

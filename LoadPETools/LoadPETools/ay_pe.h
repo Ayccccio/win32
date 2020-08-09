@@ -16,6 +16,12 @@
 #define strLen strlen
 #endif
 
+#ifdef _WIN64
+#define ADWORD DWORD64
+#else
+#define ADWORD DWORD
+#endif
+
 
 //************************************
 // Method:    loadPEFile
@@ -92,7 +98,7 @@ BOOL getPELastSectionHeader(IN VOID* pFileBuff, OUT PIMAGE_SECTION_HEADER& pImag
 // Parameter: IN VOID * pFileBuff PE文件缓冲区
 // Parameter: DWORD dwFoa 文件偏移地址
 //************************************
-DWORD foaToRva(IN VOID* pFileBuff, IN DWORD dwFoa);
+ADWORD foaToRva(IN VOID* pFileBuff, IN ADWORD dwFoa);
 
 
 
@@ -105,4 +111,4 @@ DWORD foaToRva(IN VOID* pFileBuff, IN DWORD dwFoa);
 // Parameter: IN VOID * pFileBuff 缓冲区指针
 // Parameter: IN DWORD dwRva 虚拟内存偏移
 //************************************
-DWORD rvaToFoa(IN VOID* pFileBuff, IN DWORD dwRva);
+ADWORD rvaToFoa(IN VOID* pFileBuff, IN ADWORD dwRva);

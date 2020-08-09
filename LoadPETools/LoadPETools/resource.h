@@ -7,6 +7,7 @@
 #define IDD_DIALOG_PEEDIT               105
 #define IDD_DIALOG_PEMAGIC              107
 #define IDD_DIALOG_SUBSYS               109
+#define IDD_DIALOG_CHARACTER            110
 #define IDC_BUTTON_PEEDIT               1001
 #define IDC_BUTTON_ABOUT                1002
 #define IDC_BUTTON_LOGOUT               1003
@@ -50,14 +51,31 @@
 #define IDC_BUTTON_COMMIT               1043
 #define IDC_BUTTON_SUBSYSSAVE           1043
 #define IDC_STATIC_SUBSYS               1044
+#define IDC_STATIC_CHARACTER            1045
+#define IDC_CHECK_RELOCS                1046
+#define IDC_CHECK_IMAGE                 1047
+#define IDC_CHECK_LINE                  1048
+#define IDC_CHECK_LOCAL                 1049
+#define IDC_CHECK_WS                    1050
+#define IDC_CHECK_BYTES                 1051
+#define IDC_CHECK_LARGE                 1052
+#define IDC_CHECK_DEBUG                 1053
+#define IDC_CHECK_REMOVABLE             1054
+#define IDC_CHECK_SYSTEM                1055
+#define IDC_CHECK_DLL                   1056
+#define IDC_CHECK_ONLY                  1057
+#define IDC_CHECK_ONLY_SYSTEM           1057
+#define IDC_CHECK_32BIT                 1058
+#define IDC_CHECK_NET                   1059
+#define IDC_CHECK_REVERSEN_HI           1060
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        111
+#define _APS_NEXT_RESOURCE_VALUE        113
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1045
+#define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
