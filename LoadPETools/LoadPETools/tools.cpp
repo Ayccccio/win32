@@ -152,6 +152,27 @@ INT_PTR CALLBACK selectSubSystemWinProc(
 	}
 }
 
+//选择特征属性窗口消息回调函数
+INT_PTR CALLBACK selectCharacteristicsWinProc(
+	HWND hwnd,
+	UINT uMsg,
+	WPARAM wParam,
+	LPARAM lParam)
+{
+	WORD pwIndex[] = { IDC_CHECK_RELOCS ,IDC_CHECK_IMAGE ,IDC_CHECK_LINE ,IDC_CHECK_LOCAL ,
+						IDC_CHECK_WS ,IDC_CHECK_LARGE ,0,IDC_CHECK_BYTES ,
+						IDC_CHECK_32BIT, IDC_CHECK_DEBUG ,IDC_CHECK_REMOVABLE ,IDC_CHECK_NET,
+						IDC_CHECK_SYSTEM ,IDC_CHECK_DLL, IDC_CHECK_ONLY_SYSTEM ,IDC_CHECK_REVERSEN_HI };
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+	{
+		
+	}
+	default:
+		break;
+	}
+}
 
 //PE编辑窗口消息处理回调函数
 INT_PTR CALLBACK PEDialogProc(
@@ -526,5 +547,6 @@ BOOL selectSubSystem(HWND hwnd) {
 
 BOOL selectCharacteristics(HWND hwnd)
 {
-
+	GetDlgItemText(hwnd, IDC_EDIT_CHARACTER, ptText, sizeof ptText);
+	DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_CHARACTER), hwnd, selectCharacteristicsWinProc);
 }
