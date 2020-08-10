@@ -25,6 +25,12 @@
 #define wcsprintf sprintf
 #endif
 
+#ifdef UNICODE
+#define wcscanf_s wscanf_s
+#else
+#define wcscanf_s sscanf_s
+#endif
+
 
 //PE编辑窗口消息处理回调函数
 INT_PTR CALLBACK PEDialogProc(

@@ -159,18 +159,53 @@ INT_PTR CALLBACK selectCharacteristicsWinProc(
 	WPARAM wParam,
 	LPARAM lParam)
 {
+	//复选框ID
 	WORD pwIndex[] = { IDC_CHECK_RELOCS ,IDC_CHECK_IMAGE ,IDC_CHECK_LINE ,IDC_CHECK_LOCAL ,
 						IDC_CHECK_WS ,IDC_CHECK_LARGE ,0,IDC_CHECK_BYTES ,
 						IDC_CHECK_32BIT, IDC_CHECK_DEBUG ,IDC_CHECK_REMOVABLE ,IDC_CHECK_NET,
 						IDC_CHECK_SYSTEM ,IDC_CHECK_DLL, IDC_CHECK_ONLY_SYSTEM ,IDC_CHECK_REVERSEN_HI };
+	WORD wCharacter = 0;
+	int i = 1;
 	switch (uMsg)
 	{
+	case WM_CLOSE: 
+	{
+		EndDialog(hwnd, 0);
+		break;
+	}
 	case WM_INITDIALOG:
 	{
-		
+		bFlag = 0;
+
+		//设置静态标签当前值
+		SetDlgItemText(hwnd, IDC_STATIC_CHARACTER, ptText);
+
+		wCharacter = StrToInt(ptText);
+
+		//遍历wCharacter取每个二进制位的值
+		while (i < 17)
+		{
+			if (i == 7)
+			{
+				break;
+			}
+			if (getBitOfIndex(wCharacter,i))
+			{
+				SendMessage(GetDlgItem(hwnd, pwIndex[i - 1]), BM_SETCHECK, BST_CHECKED, NULL);
+			}
+			i++;
+		}
+		break;
+	}
+	case IDC_BUTTON_SUBSYSSAVE:
+	{
+		bFlag = 1;
+		EndDialog(hwnd, 0);
+		break;
 	}
 	default:
-		break;
+		return FALSE;
+	return TRUE;
 	}
 }
 
@@ -549,4 +584,5 @@ BOOL selectCharacteristics(HWND hwnd)
 {
 	GetDlgItemText(hwnd, IDC_EDIT_CHARACTER, ptText, sizeof ptText);
 	DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_CHARACTER), hwnd, selectCharacteristicsWinProc);
+	return bFlag;
 }

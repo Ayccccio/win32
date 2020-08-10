@@ -14,3 +14,5 @@ void __cdecl OutputDebugStringF(const TCHAR* format, ...)
 	GlobalFree(strBuffer);
 	return;
 }
+
+
