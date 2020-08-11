@@ -26,9 +26,9 @@
 #endif
 
 #ifdef UNICODE
-#define wcscanf_s wscanf_s
+#define swcscanf_s swscanf_s
 #else
-#define wcscanf_s sscanf_s
+#define swcscanf_s sscanf_s
 #endif
 
 

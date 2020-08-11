@@ -68,6 +68,7 @@
 #define IDC_CHECK_32BIT                 1058
 #define IDC_CHECK_NET                   1059
 #define IDC_CHECK_REVERSEN_HI           1060
+#define IDC_BUTTON_CHARSAVE             1061
 
 // Next default values for new objects
 // 
@@ -75,7 +76,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        113
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1047
+#define _APS_NEXT_CONTROL_VALUE         1062
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

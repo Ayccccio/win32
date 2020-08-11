@@ -130,7 +130,7 @@ int CALLBACK WinMain(
 	{
 		//if (openFileName(ptText, sizeof ptText))	//文件对话框获取文件目录
 		//{
-			wcsprintf(ptText, TEXT("C:\\Users\\\Ayccc\\Desktop\\PETool 1.0.0.5.exe"));
+			wcsprintf(ptText, TEXT("C:\\Users\\\Ay\\Desktop\\1.exe"));
 			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEEDIT), GetDlgItem((HWND)hAPPInterface, IDD_DIALOG_MAIN), PEDialogProc);
 		//}
 		bFlag = FALSE;		//开关置0

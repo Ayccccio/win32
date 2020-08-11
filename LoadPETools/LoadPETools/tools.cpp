@@ -164,8 +164,9 @@ INT_PTR CALLBACK selectCharacteristicsWinProc(
 						IDC_CHECK_WS ,IDC_CHECK_LARGE ,0,IDC_CHECK_BYTES ,
 						IDC_CHECK_32BIT, IDC_CHECK_DEBUG ,IDC_CHECK_REMOVABLE ,IDC_CHECK_NET,
 						IDC_CHECK_SYSTEM ,IDC_CHECK_DLL, IDC_CHECK_ONLY_SYSTEM ,IDC_CHECK_REVERSEN_HI };
-	WORD wCharacter = 0;
+	DWORD wCharacter = 0;
 	int i = 1;
+
 	switch (uMsg)
 	{
 	case WM_CLOSE: 
@@ -180,14 +181,16 @@ INT_PTR CALLBACK selectCharacteristicsWinProc(
 		//设置静态标签当前值
 		SetDlgItemText(hwnd, IDC_STATIC_CHARACTER, ptText);
 
-		wCharacter = StrToInt(ptText);
+		swcscanf_s(ptText, TEXT("%x"), &wCharacter);
+
 
 		//遍历wCharacter取每个二进制位的值
 		while (i < 17)
 		{
 			if (i == 7)
 			{
-				break;
+				i++;
+				continue;
 			}
 			if (getBitOfIndex(wCharacter,i))
 			{
@@ -197,16 +200,30 @@ INT_PTR CALLBACK selectCharacteristicsWinProc(
 		}
 		break;
 	}
-	case IDC_BUTTON_SUBSYSSAVE:
+	case WM_COMMAND:
 	{
-		bFlag = 1;
-		EndDialog(hwnd, 0);
+		switch (wParam)
+		{
+		case IDC_BUTTON_CHARSAVE:
+		{
+			bFlag = 1;
+			EndDialog(hwnd, 0);
+			break;
+		}
+		case IDC_CHECK_RELOCS:
+		{
+			DbgPrintf(TEXT("%s"),ptText);
+		}
+		default:
+			return FALSE;
+		return TRUE;
+		}
 		break;
 	}
 	default:
 		return FALSE;
-	return TRUE;
 	}
+	return TRUE;
 }
 
 //PE编辑窗口消息处理回调函数
@@ -270,9 +287,6 @@ INT_PTR CALLBACK PEDialogProc(
 	}
 	return FALSE;
 }
-
-
-
 
 DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames,PWORD pdColWidths) {
 	LVCOLUMN lvCol = { 0 };
