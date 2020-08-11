@@ -17,26 +17,30 @@ void __cdecl OutputDebugStringF(const TCHAR* format, ...)
 
 
 DWORD getBitOfIndex(DWORD dwData, DWORD dwIndex) {
-	DWORD dwNum = sizeof var * 8;
-	if (index > dwNum || index == 0)
+	DWORD dwNum = sizeof dwData * 8;
+	if (dwIndex > dwNum || dwIndex == 0)
 	{
 		return -1;
 	}
 
-	if (index == 1)
+	if (dwIndex == 1)
 	{
-		return var & 1;
+		return dwData & 1;
 	}
 	else
-		return var & (T)pow(2, index - 1);
+		return dwData & (DWORD)pow(2, dwIndex - 1);
 }
 
 
-DWORD setBitOfIndex(DWORD* pdwData, DWORD dwIndex, BOOL var) {
+DWORD setBitOfIndex(DWORD* pdwData, DWORD dwIndex, BOOL bVar) {
 	DWORD dwTemp = *pdwData;
-	if (dwIndex == 1)
+	if (dwIndex > 4 * 8 )
 	{
-		if (var == 1)
+		return -1;
+	}
+	else if (dwIndex == 1)
+	{
+		if (bVar == 1)
 		{
 			dwTemp |= 1;
 		}
@@ -44,4 +48,15 @@ DWORD setBitOfIndex(DWORD* pdwData, DWORD dwIndex, BOOL var) {
 			dwTemp &= 0xfffffffe;
 		}
 	}
+	else {
+		if (bVar == 1)
+		{
+			dwTemp |= (DWORD)pow(2, dwIndex - 1);
+		}
+		else {
+			dwTemp = dwTemp & (0xffffffff - (DWORD)pow(2, dwIndex - 1));
+		}
+	}
+	*pdwData = dwTemp;
+	return dwTemp;
 }

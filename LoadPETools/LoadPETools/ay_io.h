@@ -27,3 +27,15 @@ void __cdecl OutputDebugStringF(const TCHAR* format, ...);
 DWORD getBitOfIndex(DWORD data, DWORD dwIndex);
 
 
+
+//************************************
+// Method:    setBitOfIndex
+// FullName:  设置数据二进制中指定位的值
+// Access:    public 
+// Returns:   DWORD 索引超出范围返回-1,成功返回数据设置后的值
+// Qualifier:
+// Parameter: DWORD * pdwData 值
+// Parameter: DWORD dwIndex 索引
+// Parameter: BOOL bVar 二进制值
+//************************************
+DWORD setBitOfIndex(DWORD* pdwData, DWORD dwIndex, BOOL bVar);

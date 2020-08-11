@@ -144,15 +144,27 @@
     <ClCompile Include="ay_io.cpp" />
     <ClCompile Include="ay_pe.cpp" />
     <ClCompile Include="const.cpp" />
+    <ClCompile Include="win_fileHeadCharacter.cpp" />
+    <ClCompile Include="win_main.cpp" />
     <ClCompile Include="tools.cpp" />
-    <ClCompile Include="WinMain.cpp" />
+    <ClCompile Include="winMain.cpp" />
+    <ClCompile Include="win_optionHeadMagic.cpp" />
+    <ClCompile Include="win_peEdit.cpp" />
+    <ClCompile Include="win_sectionTable.cpp" />
+    <ClCompile Include="win_subSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ay_io.h" />
     <ClInclude Include="ay_pe.h" />
     <ClInclude Include="const.h" />
+    <ClInclude Include="win_fileHeadCharacter.h" />
+    <ClInclude Include="win_peEdit.h" />
+    <ClInclude Include="win_main.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="tools.h" />
+    <ClInclude Include="win_optionHeadMagic.h" />
+    <ClInclude Include="win_sectionTable.h" />
+    <ClInclude Include="win_subSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

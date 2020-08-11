@@ -43,7 +43,7 @@ DWORD loadPEFile(IN PTCHAR ptFileName, OUT PVOID* pFileBuff);
 // Qualifier:
 // Parameter: VOID * pFileBuff ª∫≥Â«¯÷∏’Î
 //************************************
-void freePeFileBuff(PVOID pFileBuff);
+void freePeFileBuff(PVOID& pFileBuff);
 
 
 //************************************

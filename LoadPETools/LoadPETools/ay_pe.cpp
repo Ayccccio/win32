@@ -38,7 +38,7 @@ DWORD loadPEFile(IN PTCHAR ptFileName, OUT PVOID* pFileBuff) {
 	return dwReadSize;
 }
 
-void freePeFileBuff(PVOID pFileBuff)
+void freePeFileBuff(PVOID& pFileBuff)
 {
 	if (pFileBuff != NULL)
 	{
@@ -188,3 +188,6 @@ ADWORD rvaToFoa(IN VOID* pFileBuff, IN ADWORD dwRva) {
 }
 
 
+DWORD getSectionName(PIMAGE_SECTION_HEADER pImageSection, DWORD dwBuffSize, PTCHAR ptText) {
+
+}

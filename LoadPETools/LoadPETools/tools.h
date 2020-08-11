@@ -1,16 +1,18 @@
 #pragma once
-#include <windows.h>
 #include <stdio.h>
-#include <commctrl.h>
+#include <ShlWapi.h>
+#include <windowsx.h>
+#include <windows.h>
 #include <TlHelp32.h>
 #include <Psapi.h>
-#include <ShlWapi.h>
+#include <commctrl.h>
 #include "ay_pe.h"
 #include "ay_io.h"
 #include "const.h"
 #include "resource.h"
-#pragma comment(lib, "shlwapi")
 #pragma comment(lib,"comctl32.lib")	
+#pragma comment(lib, "shlwapi")
+
 
 
 #ifdef UNICODE
@@ -33,7 +35,7 @@
 
 
 //PE编辑窗口消息处理回调函数
-INT_PTR CALLBACK PEDialogProc(
+INT_PTR CALLBACK peEditWinProc(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,
@@ -67,31 +69,6 @@ BOOL processTokenUp(HANDLE processHandle, LPCWSTR privilege);
 
 
 //************************************
-// Method:    initProcessListControlRow
-// FullName:  初始化进程列表通用控件内容
-// Access:    public 
-// Returns:   DWORD 成功返回添加行数,失败返回0
-// Qualifier:
-// Parameter: HWND hListControl 列表通用控件句柄
-//************************************
-DWORD addProcessListControlRow(HWND hListControl);
-
-
-
-//************************************
-// Method:    addMoudelListControlRow
-// FullName:  添加模块列表通用空间内容
-// Access:    public 
-// Returns:   DWORD
-// Qualifier:
-// Parameter: HWND & hProcessListCtrl 进程列表通用空间句柄
-// Parameter: HWND & hMoudelListCtrl 模块列表通用空间句柄
-//************************************
-DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl);
-
-
-
-//************************************
 // Method:    openFileName
 // FullName:  打开文件对话框
 // Access:    public 
@@ -102,42 +79,3 @@ DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl);
 //************************************
 BOOL openFileName(PTCHAR ptText, DWORD dwBuffSize);
 
-
-
-//************************************
-// Method:    addPEEditWinContent
-// FullName:  添加PE编辑框内容
-// Access:    public 
-// Returns:   BOOL
-// Qualifier:
-// Parameter: HWND hwnd PE编辑窗口句柄
-// Parameter: PTCHAR ptFileName 文件名指针,用于加载PE文件到缓冲区
-//************************************
-BOOL addPEEditWinContent(HWND hwnd, PTCHAR ptFileName);
-
-
-//************************************
-// Method:    showPEMagicWin
-// FullName:  显示PE标记窗口
-// Access:    public 
-// Returns:   VOID
-// Qualifier:
-// Parameter: HWND hwnd 需指定的父窗口句柄
-//************************************
-VOID showPEMagicWin(HWND hwnd);
-
-
-
-//************************************
-// Method:    selectSubSystem
-// FullName:  选择子系统标志值放全局变量中的ptText中
-// Access:    public 
-// Returns:   PTCHAR
-// Qualifier:
-// Parameter: HWND hwnd 用于指定父窗口句柄
-//************************************
-BOOL selectSubSystem(HWND hwnd);
-
-
-
-BOOL selectCharacteristics(HWND hwnd);
