@@ -4,6 +4,7 @@
 #include "win_subSystem.h"
 #include "win_optionHeadMagic.h"
 #include "win_sectionTable.h"
+#include "win_peDirectory.h"
 
 
 //PE编辑窗口消息处理回调函数

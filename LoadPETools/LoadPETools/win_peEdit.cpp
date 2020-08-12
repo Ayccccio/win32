@@ -18,7 +18,10 @@ INT_PTR CALLBACK peEditWinProc(
 
 		SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)ptTitle);
 
-		addPEEditWinContent(hwnd, ptText);
+		if (!addPEEditWinContent(hwnd, ptText))
+		{
+			SendMessage(hwnd, WM_CLOSE, 0, 0);
+		}
 
 		break;
 	}
@@ -53,21 +56,25 @@ INT_PTR CALLBACK peEditWinProc(
 			}
 			break;
 		}
-		case IDC_BUTTON_SECTION:
+		case IDC_BUTTON_SECTION:		//Çø¶Î°´Å¥µ¥»÷
 		{
 			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_SECTION), hwnd, WinProcOfSectionTable);
+			break;
+		}
+		case IDC_BUTTON_DIRECTORY:
+		{
+			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_DIRECTORY), hwnd, winProcOfDirectory);
+			break;
 		}
 		default:
 			return FALSE;
-			return TRUE;
 		}
-		break;
+		return FALSE;
 	}
 	default:
 		return FALSE;
-		return TRUE;
 	}
-	return FALSE;
+	return TRUE;
 }
 
 BOOL addPEEditWinContent(HWND hwnd, PTCHAR ptFileName) {

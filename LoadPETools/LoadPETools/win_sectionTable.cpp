@@ -7,6 +7,7 @@ INT_PTR CALLBACK WinProcOfSectionTable(
 	LPARAM lParam) 
 {
 	WORD wColumnWidths[SectionListControlColumNumber] = { 100,100,100,100,100,100 };
+	HWND hListControl = NULL;
 
 	switch (uMsg)
 	{
@@ -17,11 +18,17 @@ INT_PTR CALLBACK WinProcOfSectionTable(
 	}
 	case WM_INITDIALOG: 
 	{
+		//获取列表通用控件句柄
+		hListControl = GetDlgItem(hwnd, IDC_LIST_SECTION);
+
+		//设置点击列表通用对话框选中整行
+		SendMessage(hListControl, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
+
 		//初始化列表通用控件表头
-		initListControlHeader(GetDlgItem(hwnd, IDC_LIST_SECTION), SectionListControlColumNumber, (PTCHAR)TEXT("名称\0RVA\0VSize\0FOA\0FSize\0特征"), wColumnWidths);
+		initListControlHeader(hListControl, SectionListControlColumNumber, (PTCHAR)TEXT("名称\0RVA\0VSize\0FOA\0FSize\0特征"), wColumnWidths);
 
 		//添加列表通用控件内容
-		addListControlOfSection(GetDlgItem(hwnd, IDC_LIST_SECTION));
+		addListControlOfSection(hListControl);
 		break;
 	}
 	default:
@@ -36,6 +43,7 @@ DWORD addListControlOfSection(HWND hwListControl) {
 	int i = 1;
 	size_t num = 0;
 	LVITEM lv = {0};
+	PTCHAR ptTemp = ptText;
 	lv.mask = LVIF_TEXT;
 
 
@@ -45,8 +53,8 @@ DWORD addListControlOfSection(HWND hwListControl) {
 		{
 			//1.名称
 			memset(ptText, 0, sizeof ptText);
-			getSectionName(pImageSecitonHead, (PTCHAR*)&ptText[0], sizeof ptText);
-			wcsprintf(ptText, TEXT("%s"), pImageSecitonHead->Name);
+			getSectionName(pImageSecitonHead, (PTCHAR*)&ptTemp, sizeof ptText);
+			//wcsprintf(ptText, TEXT("%s"), pImageSecitonHead->Name);
 			lv.pszText = ptText;
 			lv.iSubItem = 0;
 			ListView_InsertItem(hwListControl,&lv);
@@ -81,7 +89,7 @@ DWORD addListControlOfSection(HWND hwListControl) {
 			lv.iSubItem = 5;
 			ListView_SetItem(hwListControl, &lv);
 
-			pImageSecitonHead = (PIMAGE_SECTION_HEADER)((ADWORD)pImageFileHeader + i * IMAGE_SIZEOF_SECTION_HEADER);
+			pImageSecitonHead = (PIMAGE_SECTION_HEADER)((ADWORD)pImageSecitonHead +  IMAGE_SIZEOF_SECTION_HEADER);
 			i++;
 		}
 	}

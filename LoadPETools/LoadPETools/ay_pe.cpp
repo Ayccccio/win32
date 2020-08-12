@@ -189,7 +189,7 @@ ADWORD rvaToFoa(IN VOID* pFileBuff, IN ADWORD dwRva) {
 
 
 DWORD getSectionName(PIMAGE_SECTION_HEADER pImageSectionHead, PTCHAR* ptBuff, DWORD dwBuffSize) {
-	if (ptBuff == NULL | *ptBuff == NULL)
+	if (ptBuff == NULL)
 	{
 		return -1;
 	}

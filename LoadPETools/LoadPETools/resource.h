@@ -10,6 +10,7 @@
 #define IDD_DIALOG_CHARACTER            110
 #define IDD_DIALOG1                     113
 #define IDD_DIALOG_SECTION              113
+#define IDD_DIALOG_DIRECTORY            115
 #define IDC_BUTTON_PEEDIT               1001
 #define IDC_BUTTON_ABOUT                1002
 #define IDC_BUTTON_LOGOUT               1003
@@ -72,14 +73,72 @@
 #define IDC_CHECK_NET                   1059
 #define IDC_CHECK_REVERSEN_HI           1060
 #define IDC_BUTTON_CHARSAVE             1061
+#define IDC_EDIT_EXPROT_RVA             1063
+#define IDC_BUTTON_EXPROT               1064
+#define IDC_BUTTON9                     1065
+#define IDC_EDIT_IMPORT_RVA             1084
+#define IDC_EDIT_RESOURCE_RVA           1085
+#define IDC_EDIT_EXCEPTION_RVA          1086
+#define IDC_EDIT_SECURITY_RVA           1087
+#define IDC_EDIT_BASERELOC_RVA          1088
+#define IDC_EDIT_DEBUG_RVA              1089
+#define IDC_EDIT_COPYRIGHT_RVA          1090
+#define IDC_EDIT_GLOBALPTR_RVA          1091
+#define IDC_EDIT_TLS_RVA                1092
+#define IDC_EDIT_CONFIG_RVA             1093
+#define IDC_EDIT_BOUND_RVA              1094
+#define IDC_EDIT_IAT_RVA                1095
+#define IDC_EDIT_DELAY_RVA              1096
+#define IDC_EDIT_COM_RVA                1097
+#define IDC_EDIT_RETAIN_RVA             1098
+#define IDC_EDIT_EXPROT_FOA             1131
+#define IDC_EDIT_IMPORT_FOA             1132
+#define IDC_EDIT_RESOURCE_FOA           1133
+#define IDC_EDIT_EXCEPTION_FOA          1134
+#define IDC_EDIT_SECURITY_FOA           1135
+#define IDC_EDIT_BASERELOC_FOA          1136
+#define IDC_EDIT_DEBUG_FOA              1137
+#define IDC_EDIT_COPYRIGHT_FOA          1138
+#define IDC_EDIT_GLOBALPTR_FOA          1139
+#define IDC_EDIT_TLS_FOA                1140
+#define IDC_EDIT_CONFIG_FOA             1141
+#define IDC_EDIT_BOUND_FOA              1142
+#define IDC_EDIT_IAT_FOA                1143
+#define IDC_EDIT_DELAY_FOA              1144
+#define IDC_EDIT_COM_FOA                1145
+#define IDC_EDIT_RETAIN_FOA             1146
+#define IDC_EDIT_EXPROT_SIZE            1147
+#define IDC_EDIT_IMPORT_SIZE            1148
+#define IDC_EDIT_RESOURCE_SIZE          1149
+#define IDC_EDIT_EXCEPTION_SIZE         1150
+#define IDC_EDIT_SECURITY_SIZE          1151
+#define IDC_EDIT_BASERELOC_SIZE         1152
+#define IDC_EDIT_DEBUG_SIZE             1153
+#define IDC_EDIT_COPYRIGHT_SIZE         1154
+#define IDC_EDIT_GLOBALPTR_SIZE         1155
+#define IDC_EDIT_TLS_SIZE               1156
+#define IDC_EDIT_CONFIG_SIZE            1157
+#define IDC_EDIT_BOUND_SIZE             1158
+#define IDC_EDIT_IAT_SIZE               1159
+#define IDC_EDIT_DELAY_SIZE             1160
+#define IDC_EDIT_COM_SIZE               1161
+#define IDC_EDIT_RETAIN_SIZE            1162
+#define IDC_BUTTON_IMPORT               1163
+#define IDC_BUTTON_RESOURCE             1164
+#define IDC_BUTTON4                     1165
+#define IDC_BUTTON5                     1166
+#define IDC_BUTTON_EXPROT_L             1171
+#define IDC_BUTTON_IMPORT_L             1172
+#define IDC_BUTTON8                     1173
+#define IDC_BUTTON_RESOURCE_L           1173
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        115
+#define _APS_NEXT_RESOURCE_VALUE        117
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1062
+#define _APS_NEXT_CONTROL_VALUE         1066
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
