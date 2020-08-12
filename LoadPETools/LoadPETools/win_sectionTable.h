@@ -6,3 +6,6 @@ INT_PTR CALLBACK WinProcOfSectionTable(
 	UINT uMsg,
 	WPARAM wParam,
 	LPARAM lParam);
+
+
+DWORD addListControlOfSection(HWND hwListControl);

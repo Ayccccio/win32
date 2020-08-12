@@ -188,6 +188,30 @@ ADWORD rvaToFoa(IN VOID* pFileBuff, IN ADWORD dwRva) {
 }
 
 
-DWORD getSectionName(PIMAGE_SECTION_HEADER pImageSection, DWORD dwBuffSize, PTCHAR ptText) {
-
+DWORD getSectionName(PIMAGE_SECTION_HEADER pImageSectionHead, PTCHAR* ptBuff, DWORD dwBuffSize) {
+	if (ptBuff == NULL | *ptBuff == NULL)
+	{
+		return -1;
+	}
+	char* name = (char*)pImageSectionHead->Name;
+	PTCHAR ptText = *ptBuff;
+	int i = 0;
+	while (i < 8)
+	{
+		if (*name == '\0')
+		{
+			break;
+		}
+		MultiByteToWideChar(CP_UTF8, 0, name, 1, ptText, dwBuffSize);
+#ifdef UNICODE
+		ptText = (PTCHAR)((ADWORD)ptText + 2);
+		dwBuffSize -= 2;
+#else
+		ptText = (PTCHAR)((ADWORD)ptText + 1);
+		dwBuffSize -= 1;
+#endif
+		name += 1;
+		i++;
+	}
+	return i;
 }

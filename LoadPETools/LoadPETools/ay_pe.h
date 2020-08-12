@@ -112,3 +112,17 @@ ADWORD foaToRva(IN VOID* pFileBuff, IN ADWORD dwFoa);
 // Parameter: IN DWORD dwRva 虚拟内存偏移
 //************************************
 ADWORD rvaToFoa(IN VOID* pFileBuff, IN ADWORD dwRva);
+
+
+
+//************************************
+// Method:    getSectionName
+// FullName:  获取节块名称
+// Access:    public 
+// Returns:   DWORD 缓冲区失效返回-1,失败返回0,成功返回转换字符个数
+// Qualifier:
+// Parameter: PIMAGE_SECTION_HEADER pImageSectionHead 节表指针
+// Parameter: PTCHAR * ptBuff 缓冲区指针
+// Parameter: DWORD dwBuffSize 缓冲区大小
+//************************************
+DWORD getSectionName(PIMAGE_SECTION_HEADER pImageSectionHead, PTCHAR* ptBuff, DWORD dwBuffSize);
