@@ -39,3 +39,7 @@ DWORD getBitOfIndex(DWORD data, DWORD dwIndex);
 // Parameter: BOOL bVar 二进制值
 //************************************
 DWORD setBitOfIndex(DWORD* pdwData, DWORD dwIndex, BOOL bVar);
+
+
+
+DWORD multByteToWideChar(PCHAR pcResource, int reSize, PWCHAR* pwBuff, int buffSize);

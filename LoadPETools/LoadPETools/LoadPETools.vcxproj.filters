@@ -51,6 +51,9 @@
     <ClCompile Include="win_peDirectory.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="win_peExport.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tools.h">
@@ -87,6 +90,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="win_peDirectory.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="win_peExport.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
