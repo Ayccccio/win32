@@ -6,7 +6,7 @@ INT_PTR CALLBACK winProcOfExport(
 	WPARAM wParam,
 	LPARAM lParam) 
 {
-	WORD pwListWidths[ExportListControlColumNumber] = { 50,100,100,200 };
+	WORD pwListWidths[ExportListControlColumNumber] = { 80,100,100,300 };
 	HWND hListControl;
 
 	switch (uMsg)
@@ -20,6 +20,9 @@ INT_PTR CALLBACK winProcOfExport(
 	{
 		//获取列表通用控件句柄
 		hListControl = GetDlgItem(hwnd, IDC_LIST_EXPROT);
+
+		//设置列表控件整行选中
+		SendMessage(hListControl, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
 		//初始化列表通用控件头部
 		initListControlHeader(hListControl, ExportListControlColumNumber, (PTCHAR)TEXT("函数序号\0RVA\0FOA\0函数名"), pwListWidths);
@@ -121,6 +124,7 @@ DWORD addExportListContent(HWND hwnd) {
 	while (i < pImageExportDirectory->NumberOfFunctions)
 	{
 		pFunName = NULL;
+		j = 0;
 
 		//遍历函数序号表
 		while (j < pImageExportDirectory->NumberOfNames)
@@ -128,35 +132,40 @@ DWORD addExportListContent(HWND hwnd) {
 			//判断序号表中是否有当前函数序号
 			if (*(pdwFunNameOrd + j) == i)
 			{
-				pFunName = (PCHAR) * (pdwFunName + i);
+				pFunName = (PCHAR) (rvaToFoa(pFileBuff, *(pdwFunName + i)) + (ADWORD)pFileBuff);
+				break;
 			}
 			j++;
 		}
 
 		lv.iItem = i;
 		//1.函数序号
-		wcsprintf(ptText, TEXT("%04X"), i + pImageExportDirectory->Base);
+		wcsprintf(ptText, TEXT("%d"), i + pImageExportDirectory->Base);
+		lv.pszText = ptText;
 		lv.iSubItem = 0;
 		ListView_InsertItem(hwnd, &lv);
 
 		//2.rva
 		wcsprintf(ptText, TEXT("%08X"), *(pdwFun + i));
+		lv.pszText = ptText;
 		lv.iSubItem = 1;
 		ListView_SetItem(hwnd, &lv);
 
 		//3.foa
 		wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff, *(pdwFun + i)));
+		lv.pszText = ptText;
 		lv.iSubItem = 2;
 		ListView_SetItem(hwnd, &lv);
 
-		if (*pFunName)
+		if (pFunName)
 		{
 			//4.函数名
-			multByteToWideChar(pFunName, 0, &ptTemp, sizeof ptText);
+			MultiByteToWideChar(CP_UTF8, 0, pFunName, -1, ptText, sizeof ptText);
+			lv.pszText = ptText;
 			lv.iSubItem = 3;
 			ListView_SetItem(hwnd, &lv);
 		}
-		
+		i++;
 	}
 
 }

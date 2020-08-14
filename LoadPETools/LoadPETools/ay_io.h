@@ -41,5 +41,3 @@ DWORD getBitOfIndex(DWORD data, DWORD dwIndex);
 DWORD setBitOfIndex(DWORD* pdwData, DWORD dwIndex, BOOL bVar);
 
 
-
-DWORD multByteToWideChar(PCHAR pcResource, int reSize, PWCHAR* pwBuff, int buffSize);

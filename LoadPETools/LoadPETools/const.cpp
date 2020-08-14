@@ -11,7 +11,7 @@ PIMAGE_FILE_HEADER pImageFileHeader = NULL;			//标准PE头
 PIMAGE_OPTIONAL_HEADER32 pImageOptionalHeader32 = NULL;	//可选PE头
 PIMAGE_OPTIONAL_HEADER64 pImageOptionalHeader64 = NULL;	//可选PE头
 PIMAGE_EXPORT_DIRECTORY pImageExportDirectory = NULL;	//导出表
-PIMAGE_IMPORT_DESCRIPTOR pImageImportDirectory = NULL;	
+PIMAGE_IMPORT_DESCRIPTOR pImageImportDirectory = NULL;
 
 PWORD pwCheckBoxIndexOfFileCharacter = NULL;
 DWORD dwCharacterOfFileHead = 0;

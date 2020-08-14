@@ -62,29 +62,3 @@ DWORD setBitOfIndex(DWORD* pdwData, DWORD dwIndex, BOOL bVar) {
 }
 
 
-
-DWORD multByteToWideChar(PCHAR pcResource, int reSize, PWCHAR* pwBuff, int buffSize) {
-	PWCHAR pwTemp = *pwBuff;
-
-	int i = 0;
-	while (i < buffSize)
-	{
-		if (reSize == 0)		//
-		{
-			if (*pcResource == '\0')
-				break;
-		}
-		else
-		{
-			if (i >= reSize)
-				break;
-		}
-		
-		MultiByteToWideChar(CP_UTF8, 0, (LPCCH)pcResource, reSize, pwTemp, buffSize);
-		pcResource++;
-		pwTemp++;
-		i++;
-	}
-	wcscat_s(pwTemp, 1,L"\0");
-	return i;
-}
