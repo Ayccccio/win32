@@ -11,6 +11,7 @@
 #define IDD_DIALOG1                     113
 #define IDD_DIALOG_SECTION              113
 #define IDD_DIALOG_DIRECTORY            115
+#define IDD_DIALOG_IMPORT               117
 #define IDC_BUTTON_PEEDIT               1001
 #define IDC_BUTTON_ABOUT                1002
 #define IDC_BUTTON_LOGOUT               1003
@@ -59,7 +60,10 @@
 #define IDC_CHECK_IMAGE                 1047
 #define IDC_LIST1                       1047
 #define IDC_LIST_SECTION                1047
+#define IDC_LIST_IMPORT_DLL             1047
 #define IDC_CHECK_LINE                  1048
+#define IDC_LIST2                       1048
+#define IDC_LIST_IMPORT_FUN             1048
 #define IDC_CHECK_LOCAL                 1049
 #define IDC_CHECK_WS                    1050
 #define IDC_CHECK_BYTES                 1051
@@ -129,14 +133,13 @@
 #define IDC_BUTTON5                     1166
 #define IDC_BUTTON_EXPROT_L             1171
 #define IDC_BUTTON_IMPORT_L             1172
-#define IDC_BUTTON8                     1173
 #define IDC_BUTTON_RESOURCE_L           1173
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        117
+#define _APS_NEXT_RESOURCE_VALUE        119
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1066
 #define _APS_NEXT_SYMED_VALUE           101

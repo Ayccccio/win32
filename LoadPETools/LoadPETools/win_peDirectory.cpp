@@ -12,6 +12,16 @@ INT_PTR winProcOfDirectory(
 		EndDialog(hwnd, 0);
 		break;
 	}
+	case WM_COMMAND:
+	{
+		switch (wParam)
+		{
+		case IDC_BUTTON_IMPORT:
+		{
+			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_IMPORT), hwnd, winProcOfImport);
+		}
+		}
+	}
 	default:
 		return FALSE;
 	}
