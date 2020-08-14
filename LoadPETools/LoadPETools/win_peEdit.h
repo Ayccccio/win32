@@ -24,3 +24,4 @@ INT_PTR CALLBACK peEditWinProc(
 // Parameter: PTCHAR ptFileName 文件名指针,用于加载PE文件到缓冲区
 //************************************
 BOOL addPEEditWinContent(HWND hwnd, PTCHAR ptFileName);
+

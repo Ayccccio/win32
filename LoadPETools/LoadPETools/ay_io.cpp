@@ -85,5 +85,6 @@ DWORD multByteToWideChar(PCHAR pcResource, int reSize, PWCHAR* pwBuff, int buffS
 		pwTemp++;
 		i++;
 	}
+	wcscat_s(pwTemp, 1,L"\0");
 	return i;
 }

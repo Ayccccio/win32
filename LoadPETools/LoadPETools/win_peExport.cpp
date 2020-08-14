@@ -22,13 +22,13 @@ INT_PTR CALLBACK winProcOfExport(
 		hListControl = GetDlgItem(hwnd, IDC_LIST_EXPROT);
 
 		//初始化列表通用控件头部
-		initListControlHeader(hListControl, ExportListControlColumNumber, (PTCHAR)TEXT("序号\0RVA\0FOA\0函数名"), pwListWidths);
+		initListControlHeader(hListControl, ExportListControlColumNumber, (PTCHAR)TEXT("函数序号\0RVA\0FOA\0函数名"), pwListWidths);
 
 		//添加导出表编辑框内容
-		addExportEditConter(hwnd);
+		addExportEditContent(hwnd);
 
 		//添加列表通用控件内容
-
+		addExportListContent(hListControl);
 		return TRUE;
 	}
 	case WM_COMMAND:
@@ -42,7 +42,7 @@ INT_PTR CALLBACK winProcOfExport(
 }
 
 
-DWORD addExportEditConter(HWND hwnd) {
+DWORD addExportEditContent(HWND hwnd) {
 	if (pFileBuff == NULL)
 	{
 		return 0;
@@ -95,7 +95,7 @@ DWORD addExportEditConter(HWND hwnd) {
 }
 
 
-DWORD addExportListConter(HWND hwnd) {
+DWORD addExportListContent(HWND hwnd) {
 	LVITEM lv = { 0 };
 	lv.mask = LVIF_TEXT;
 	int i = 0;
@@ -104,7 +104,8 @@ DWORD addExportListConter(HWND hwnd) {
 	PDWORD pdwFun = NULL;
 	PDWORD pdwFunName = NULL;
 	PWORD pdwFunNameOrd = NULL;
-	PCHAR pName = NULL;
+	PCHAR pFunName = NULL;
+	PTCHAR ptTemp = ptText;
 
 	if (pImageExportDirectory == NULL)
 	{
@@ -119,20 +120,22 @@ DWORD addExportListConter(HWND hwnd) {
 	//遍历函数地址
 	while (i < pImageExportDirectory->NumberOfFunctions)
 	{
+		pFunName = NULL;
+
 		//遍历函数序号表
 		while (j < pImageExportDirectory->NumberOfNames)
 		{
 			//判断序号表中是否有当前函数序号
 			if (*(pdwFunNameOrd + j) == i)
 			{
-				pName = (PCHAR) * (pdwFunName + i);
+				pFunName = (PCHAR) * (pdwFunName + i);
 			}
 			j++;
 		}
 
 		lv.iItem = i;
-		//1.序号
-		wcsprintf(ptText, TEXT("%04X"), i);
+		//1.函数序号
+		wcsprintf(ptText, TEXT("%04X"), i + pImageExportDirectory->Base);
 		lv.iSubItem = 0;
 		ListView_InsertItem(hwnd, &lv);
 
@@ -143,11 +146,17 @@ DWORD addExportListConter(HWND hwnd) {
 
 		//3.foa
 		wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff, *(pdwFun + i)));
-		lv.iSubItem = 1;
+		lv.iSubItem = 2;
 		ListView_SetItem(hwnd, &lv);
 
-		//4.函数名
-		multByteToWideChar(pName,)
+		if (*pFunName)
+		{
+			//4.函数名
+			multByteToWideChar(pFunName, 0, &ptTemp, sizeof ptText);
+			lv.iSubItem = 3;
+			ListView_SetItem(hwnd, &lv);
+		}
+		
 	}
 
 }

@@ -6,6 +6,8 @@
 #define SectionListControlColumNumber 6		//节块通用控件列数量 
 #define ExportListControlColumNumber 4		//节块通用控件列数量 
 
+#define pImageOptionalHeader pImageOptionalHeader32
+
 
 
 extern HINSTANCE hAPPInterface;		//程序入口地址
@@ -15,7 +17,8 @@ extern BOOL bFlag;					//作为开关,用于判断一些程序是否执行
 
 extern PVOID pFileBuff;				//文件缓冲区
 extern PIMAGE_FILE_HEADER pImageFileHeader;			//标准PE头
-extern PIMAGE_OPTIONAL_HEADER pImageOptionalHeader;	//可选PE头
+extern PIMAGE_OPTIONAL_HEADER32 pImageOptionalHeader32;	//可选PE头
+extern PIMAGE_OPTIONAL_HEADER64 pImageOptionalHeader64;	//可选PE头
 extern PIMAGE_EXPORT_DIRECTORY pImageExportDirectory;	//导出表
 extern PIMAGE_IMPORT_DESCRIPTOR pImageImportDirectory;	//导入表
 

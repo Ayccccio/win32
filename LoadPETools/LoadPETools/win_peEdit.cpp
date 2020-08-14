@@ -84,8 +84,20 @@ BOOL addPEEditWinContent(HWND hwnd, PTCHAR ptFileName) {
 	if (pFileBuff == NULL)
 		return FALSE;
 
-	if (getPEHeader(pFileBuff, 0, &pImageFileHeader, &pImageOptionalHeader))	//获取PE头
+
+	if (getPEHeader(pFileBuff, 0, &pImageFileHeader, (PIMAGE_OPTIONAL_HEADER*)&pImageOptionalHeader32))	//获取PE头
 	{
+		pImageOptionalHeader64 = (PIMAGE_OPTIONAL_HEADER64)pImageOptionalHeader32;
+
+		if (pImageOptionalHeader32->Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+		{
+#define pImageOptionalHeader pImageOptionalHeader32
+		}
+		else {
+#define pImageOptionalHeader pImageOptionalHeader64
+		}
+
+
 		//入口点
 		wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader->AddressOfEntryPoint);
 		SetDlgItemText(hwnd, IDC_EDIT_ENTRY, ptText);

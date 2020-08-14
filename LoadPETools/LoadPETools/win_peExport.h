@@ -8,4 +8,7 @@ INT_PTR CALLBACK winProcOfExport(
 	LPARAM lParam);
 
 
-DWORD addExportEditConter(HWND hwnd);
+DWORD addExportEditContent(HWND hwnd);
+
+
+DWORD addExportListContent(HWND hwnd);
