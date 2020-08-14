@@ -157,7 +157,7 @@ ADWORD rvaToFoa(IN VOID* pFileBuff, IN ADWORD dwRva) {
 	PIMAGE_OPTIONAL_HEADER pImageOptionalHead = NULL;
 	PIMAGE_SECTION_HEADER pImageSectionHead = NULL;
 	int i = 0;
-	ADWORD dwFoa;
+	ADWORD dwFoa = 0;
 
 	if (getPEHeader(pFileBuff, 0, &pImageFileHead, &pImageOptionalHead) != 2)	//获取PE头
 		return 0;
@@ -179,6 +179,7 @@ ADWORD rvaToFoa(IN VOID* pFileBuff, IN ADWORD dwRva) {
 			if (dwRva >= pImageSectionHead->VirtualAddress)		//判断rva是否在当前节块
 			{
 				dwFoa = dwRva - pImageSectionHead->VirtualAddress + pImageSectionHead->PointerToRawData;
+				break;
 			}
 			pImageSectionHead--;
 			i--;

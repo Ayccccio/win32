@@ -151,6 +151,7 @@
     <ClCompile Include="win_optionHeadMagic.cpp" />
     <ClCompile Include="win_peDirectory.cpp" />
     <ClCompile Include="win_peEdit.cpp" />
+    <ClCompile Include="win_peExport.cpp" />
     <ClCompile Include="win_peImport.cpp" />
     <ClCompile Include="win_sectionTable.cpp" />
     <ClCompile Include="win_subSystem.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="win_optionHeadMagic.h" />
+    <ClInclude Include="win_peExport.h" />
     <ClInclude Include="win_peImport.h" />
     <ClInclude Include="win_sectionTable.h" />
     <ClInclude Include="win_subSystem.h" />

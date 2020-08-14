@@ -11,7 +11,8 @@
 #define IDD_DIALOG1                     113
 #define IDD_DIALOG_SECTION              113
 #define IDD_DIALOG_DIRECTORY            115
-#define IDD_DIALOG_IMPORT               117
+#define IDD_DIALOG_EXPORT               117
+#define IDD_DIALOG_IMPORT               118
 #define IDC_BUTTON_PEEDIT               1001
 #define IDC_BUTTON_ABOUT                1002
 #define IDC_BUTTON_LOGOUT               1003
@@ -60,6 +61,7 @@
 #define IDC_CHECK_IMAGE                 1047
 #define IDC_LIST1                       1047
 #define IDC_LIST_SECTION                1047
+#define IDC_LIST_EXPROT                 1047
 #define IDC_LIST_IMPORT_DLL             1047
 #define IDC_CHECK_LINE                  1048
 #define IDC_LIST2                       1048
@@ -80,6 +82,17 @@
 #define IDC_EDIT_EXPROT_RVA             1063
 #define IDC_BUTTON_EXPROT               1064
 #define IDC_BUTTON9                     1065
+#define IDC_EDIT_EXPORT_CHARACTER       1066
+#define IDC_EDIT_EXPORT_TIME            1067
+#define IDC_EDIT_EXPORT_BASE            1068
+#define IDC_EDIT_EXPORT_NAME_ADDR       1069
+#define IDC_EDIT_EXPORT_NAME            1070
+#define IDC_EDIT_EXPORT_FNNUM           1071
+#define IDC_EDIT_EXPORT_FNNAMENUM       1072
+#define IDC_EDIT_EXPORT_FN_ADDR         1073
+#define IDC_EDIT_EXPORT_FNNAME_ADDR     1074
+#define IDC_EDIT_EXPORT_FNNAMEOR_ADDR   1075
+#define IDC_BUTTON_EXPROT_SAVE          1076
 #define IDC_EDIT_IMPORT_RVA             1084
 #define IDC_EDIT_RESOURCE_RVA           1085
 #define IDC_EDIT_EXCEPTION_RVA          1086
@@ -129,8 +142,6 @@
 #define IDC_EDIT_RETAIN_SIZE            1162
 #define IDC_BUTTON_IMPORT               1163
 #define IDC_BUTTON_RESOURCE             1164
-#define IDC_BUTTON4                     1165
-#define IDC_BUTTON5                     1166
 #define IDC_BUTTON_EXPROT_L             1171
 #define IDC_BUTTON_IMPORT_L             1172
 #define IDC_BUTTON_RESOURCE_L           1173
@@ -141,7 +152,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        119
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1066
+#define _APS_NEXT_CONTROL_VALUE         1077
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

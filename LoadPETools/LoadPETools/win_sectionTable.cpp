@@ -51,6 +51,7 @@ DWORD addListControlOfSection(HWND hwListControl) {
 	{
 		while (i <= pImageFileHeader->NumberOfSections)
 		{
+			lv.iItem = i - 1;
 			//1.Ãû³Æ
 			memset(ptText, 0, sizeof ptText);
 			getSectionName(pImageSecitonHead, (PTCHAR*)&ptTemp, sizeof ptText);
