@@ -1,6 +1,6 @@
 #include "win_fileHeadCharacter.h"
 
-INT_PTR CALLBACK selectCharacterOfFileHeadWinProc(
+INT_PTR CALLBACK winProcSelectCharacterOfFileHead(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,
@@ -150,7 +150,7 @@ INT_PTR CALLBACK selectCharacterOfFileHeadWinProc(
 BOOL openSelCharacterWinOfFileHead(HWND hwnd)
 {
 	GetDlgItemText(hwnd, IDC_EDIT_CHARACTER, ptText, sizeof ptText);
-	DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_CHARACTER), hwnd, selectCharacterOfFileHeadWinProc);
+	DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_CHARACTER), hwnd, winProcSelectCharacterOfFileHead);
 	return bFlag;
 }
 

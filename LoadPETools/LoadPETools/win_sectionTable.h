@@ -1,7 +1,7 @@
 #pragma once
 #include "tools.h"
 
-INT_PTR CALLBACK WinProcOfSectionTable(
+INT_PTR CALLBACK winProcOfSectionTable(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,

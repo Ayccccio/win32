@@ -1,7 +1,7 @@
 #include "win_peEdit.h"
 
 
-INT_PTR CALLBACK peEditWinProc(
+INT_PTR CALLBACK winProcPEEdit(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,
@@ -23,13 +23,13 @@ INT_PTR CALLBACK peEditWinProc(
 			SendMessage(hwnd, WM_CLOSE, 0, 0);
 		}
 
-		break;
+		return TRUE;
 	}
 	case WM_CLOSE:
 	{
 		freePeFileBuff(pFileBuff);
 		EndDialog(hwnd, 0);
-		break;
+		return TRUE;
 	}
 	case WM_COMMAND:
 	{
@@ -37,7 +37,7 @@ INT_PTR CALLBACK peEditWinProc(
 		{
 		case IDC_BUTTON_PEMAGIC: {		//PE标志按钮单击
 			showWinOfOptionHeadMagic(hwnd);
-			break;
+			return TRUE;
 		}
 		case IDC_BUTTON_SUBSYS:			//子系统按钮单击
 		{
@@ -45,7 +45,7 @@ INT_PTR CALLBACK peEditWinProc(
 			{
 				SetDlgItemText(hwnd, IDC_EDIT_SUBSYS, ptText);
 			}
-			break;
+			return TRUE;
 		}
 		case IDC_BUTTON_CHARACTER:		//信息标志按钮单击
 		{
@@ -54,27 +54,22 @@ INT_PTR CALLBACK peEditWinProc(
 				wcsprintf(ptText, TEXT("%x"), dwCharacterOfFileHead);
 				SetDlgItemText(hwnd, IDC_EDIT_CHARACTER, ptText);
 			}
-			break;
+			return TRUE;
 		}
 		case IDC_BUTTON_SECTION:		//区段按钮单击
 		{
-			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_SECTION), hwnd, WinProcOfSectionTable);
-			break;
+			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_SECTION), hwnd, winProcOfSectionTable);
+			return TRUE;
 		}
 		case IDC_BUTTON_DIRECTORY:
 		{
 			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_DIRECTORY), hwnd, winProcOfDirectory);
-			break;
+			return TRUE;
 		}
-		default:
-			return FALSE;
 		}
-		return FALSE;
 	}
-	default:
-		return FALSE;
 	}
-	return TRUE;
+	return FALSE;
 }
 
 BOOL addPEEditWinContent(HWND hwnd, PTCHAR ptFileName) {
@@ -91,40 +86,80 @@ BOOL addPEEditWinContent(HWND hwnd, PTCHAR ptFileName) {
 
 		if (pImageOptionalHeader32->Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
 		{
-#define pImageOptionalHeader pImageOptionalHeader32
+			//入口点
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader32->AddressOfEntryPoint);
+			SetDlgItemText(hwnd, IDC_EDIT_ENTRY, ptText);
+
+			//基址
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader32->ImageBase);
+			SetDlgItemText(hwnd, IDC_EDIT_BASE, ptText);
+
+			//文件大小
+			wcsprintf(ptText, TEXT("%04X"), dwFileSize);
+			SetDlgItemText(hwnd, IDC_EDIT_FILESIZE, ptText);
+
+			//内存节块对齐
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader32->SectionAlignment);
+			SetDlgItemText(hwnd, IDC_EDIT_MENALIG, ptText);
+
+			//文件节块对齐
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader32->FileAlignment);
+			SetDlgItemText(hwnd, IDC_EDIT_FILEALIG, ptText);
+
+			//PE标志
+			wcsprintf(ptText, TEXT("%04X"), pImageOptionalHeader32->Magic);
+			SetDlgItemText(hwnd, IDC_EDIT_PEMAGIC, ptText);
+
+			//子系统
+			wcsprintf(ptText, TEXT("%04X"), pImageOptionalHeader32->Subsystem);
+			SetDlgItemText(hwnd, IDC_EDIT_SUBSYS, ptText);
+
+			//首部及节表大小
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader32->SizeOfHeaders);
+			SetDlgItemText(hwnd, IDC_EDIT_HEADSIZE, ptText);
+
+			//可选PE头大小
+			wcsprintf(ptText, TEXT("%04X"), sizeof IMAGE_OPTIONAL_HEADER32);
+			SetDlgItemText(hwnd, IDC_EDIT_OPTIONSIZE, ptText);
+
 		}
 		else {
-#define pImageOptionalHeader pImageOptionalHeader64
+			//入口点
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader64->AddressOfEntryPoint);
+			SetDlgItemText(hwnd, IDC_EDIT_ENTRY, ptText);
+
+			//基址
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader64->ImageBase);
+			SetDlgItemText(hwnd, IDC_EDIT_BASE, ptText);
+
+			//文件大小
+			wcsprintf(ptText, TEXT("%04X"), dwFileSize);
+			SetDlgItemText(hwnd, IDC_EDIT_FILESIZE, ptText);
+
+			//内存节块对齐
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader64->SectionAlignment);
+			SetDlgItemText(hwnd, IDC_EDIT_MENALIG, ptText);
+
+			//文件节块对齐
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader64->FileAlignment);
+			SetDlgItemText(hwnd, IDC_EDIT_FILEALIG, ptText);
+
+			//PE标志
+			wcsprintf(ptText, TEXT("%04X"), pImageOptionalHeader64->Magic);
+			SetDlgItemText(hwnd, IDC_EDIT_PEMAGIC, ptText);
+
+			//子系统
+			wcsprintf(ptText, TEXT("%04X"), pImageOptionalHeader64->Subsystem);
+			SetDlgItemText(hwnd, IDC_EDIT_SUBSYS, ptText);
+
+			//首部及节表大小
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader64->SizeOfHeaders);
+			SetDlgItemText(hwnd, IDC_EDIT_HEADSIZE, ptText);
+
+			//可选PE头大小
+			wcsprintf(ptText, TEXT("%04X"), sizeof IMAGE_OPTIONAL_HEADER32);
+			SetDlgItemText(hwnd, IDC_EDIT_OPTIONSIZE, ptText);
 		}
-
-
-		//入口点
-		wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader->AddressOfEntryPoint);
-		SetDlgItemText(hwnd, IDC_EDIT_ENTRY, ptText);
-
-		//基址
-		wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader->ImageBase);
-		SetDlgItemText(hwnd, IDC_EDIT_BASE, ptText);
-
-		//文件大小
-		wcsprintf(ptText, TEXT("%04X"), dwFileSize);
-		SetDlgItemText(hwnd, IDC_EDIT_FILESIZE, ptText);
-
-		//内存节块对齐
-		wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader->SectionAlignment);
-		SetDlgItemText(hwnd, IDC_EDIT_MENALIG, ptText);
-
-		//文件节块对齐
-		wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader->FileAlignment);
-		SetDlgItemText(hwnd, IDC_EDIT_FILEALIG, ptText);
-
-		//PE标志
-		wcsprintf(ptText, TEXT("%04X"), pImageOptionalHeader->Magic);
-		SetDlgItemText(hwnd, IDC_EDIT_PEMAGIC, ptText);
-
-		//子系统
-		wcsprintf(ptText, TEXT("%04X"), pImageOptionalHeader->Subsystem);
-		SetDlgItemText(hwnd, IDC_EDIT_SUBSYS, ptText);
 
 		//区段数目
 		wcsprintf(ptText, TEXT("%04X"), pImageFileHeader->NumberOfSections);
@@ -134,18 +169,9 @@ BOOL addPEEditWinContent(HWND hwnd, PTCHAR ptFileName) {
 		wcsprintf(ptText, TEXT("%08X"), pImageFileHeader->TimeDateStamp);
 		SetDlgItemText(hwnd, IDC_EDIT_FILETIME, ptText);
 
-		//首部及节表大小
-		wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader->SizeOfHeaders);
-		SetDlgItemText(hwnd, IDC_EDIT_HEADSIZE, ptText);
-
 		//信息标志
 		wcsprintf(ptText, TEXT("%04X"), pImageFileHeader->Characteristics);
 		SetDlgItemText(hwnd, IDC_EDIT_CHARACTER, ptText);
-
-		//可选PE头大小
-		wcsprintf(ptText, TEXT("%04X"), sizeof IMAGE_OPTIONAL_HEADER);
-		SetDlgItemText(hwnd, IDC_EDIT_OPTIONSIZE, ptText);
-
 	}
 	return TRUE;
 }

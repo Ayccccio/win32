@@ -34,12 +34,6 @@ INT_PTR CALLBACK winProcOfExport(
 		addExportListContent(hListControl);
 		return TRUE;
 	}
-	case WM_COMMAND:
-	{
-		
-	}
-	default:
-		return FALSE;
 	}
 	return FALSE;
 }
@@ -52,7 +46,14 @@ DWORD addExportEditContent(HWND hwnd) {
 	}
 
 	//获取导出表
-	pImageExportDirectory = (PIMAGE_EXPORT_DIRECTORY)((ADWORD)pFileBuff + rvaToFoa(pFileBuff, pImageOptionalHeader->DataDirectory[0].VirtualAddress));
+	if (pImageOptionalHeader32->Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+	{
+		pImageExportDirectory = (PIMAGE_EXPORT_DIRECTORY)((ADWORD)pFileBuff + rvaToFoa(pFileBuff, pImageOptionalHeader32->DataDirectory[0].VirtualAddress));
+	}
+	else {
+		pImageExportDirectory = (PIMAGE_EXPORT_DIRECTORY)((ADWORD)pFileBuff + rvaToFoa(pFileBuff, pImageOptionalHeader64->DataDirectory[0].VirtualAddress));
+	}
+
 
 	//特征
 	wcsprintf(ptText, TEXT("%08X"), pImageExportDirectory->Characteristics);

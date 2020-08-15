@@ -1,6 +1,6 @@
 #include "win_optionHeadMagic.h"
 
-INT_PTR CALLBACK peMagicWinProc(
+INT_PTR CALLBACK winProcPEMagic(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,
@@ -18,7 +18,7 @@ INT_PTR CALLBACK peMagicWinProc(
 }
 
 VOID showWinOfOptionHeadMagic(HWND hwnd) {
-	DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEMAGIC), hwnd, peMagicWinProc);
+	DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEMAGIC), hwnd, winProcPEMagic);
 }
 
 

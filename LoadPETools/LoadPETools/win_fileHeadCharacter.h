@@ -2,7 +2,7 @@
 #include "tools.h"
 
 //选择特征属性窗口消息回调函数
-INT_PTR CALLBACK selectCharacterOfFileHeadWinProc(
+INT_PTR CALLBACK winProcSelectCharacterOfFileHead(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,

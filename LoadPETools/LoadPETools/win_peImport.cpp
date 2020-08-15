@@ -10,6 +10,7 @@ INT_PTR CALLBACK winProcOfImport(
 	WORD pwFunWidths[ImportFunListControlColumNumber] = {50, 80,80,80,50,200 };
 	HWND hDllListControl;
 	HWND hFunListControl;
+	NMHDR* pNmhdr;
 
 	switch (uMsg)
 	{
@@ -34,9 +35,31 @@ INT_PTR CALLBACK winProcOfImport(
 
 		//添加Dll列表内容
 		addDllListControlContent(hDllListControl);
+		return TRUE;
 	}
-	default:
-		break;
+	case WM_NOTIFY:
+	{
+		pNmhdr = (NMHDR*)lParam;
+		switch (wParam)
+		{
+		case IDC_LIST_IMPORT_DLL:
+		{
+			//获取通用控件句柄
+			hDllListControl = GetDlgItem(hwnd, IDC_LIST_IMPORT_DLL);
+			hFunListControl = GetDlgItem(hwnd, IDC_LIST_IMPORT_FUN);
+
+			if (pNmhdr->code = NM_CLICK)	//dll列表控件被点击
+			{
+				//清楚funList内容
+				ListView_DeleteAllItems(hFunListControl);
+
+				//添加函数列表控件内容
+				addFunListControlContent(hDllListControl, hFunListControl);
+				return TRUE;
+			}
+		}
+		}
+	}
 	}
 	return FALSE;
 }
@@ -47,13 +70,21 @@ DWORD addDllListControlContent(HWND hwnd) {
 	lv.mask = LVIF_TEXT;
 	int i = 0;
 
-	if (pImageOptionalHeader == 0)
+	if (pImageOptionalHeader32 == 0)
 	{
 		return 0;
 	}
 
 	//获取第一个导入表
-	pImageImportDirectory = (PIMAGE_IMPORT_DESCRIPTOR)(rvaToFoa(pFileBuff, pImageOptionalHeader->DataDirectory[1].VirtualAddress) + (ADWORD)pFileBuff);
+	if (pImageOptionalHeader32->Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+	{
+		pImageImportDirectory = (PIMAGE_IMPORT_DESCRIPTOR)(rvaToFoa(pFileBuff, pImageOptionalHeader32->DataDirectory[1].VirtualAddress) + (ADWORD)pFileBuff);
+	}
+	else {
+		pImageImportDirectory = (PIMAGE_IMPORT_DESCRIPTOR)(rvaToFoa(pFileBuff, pImageOptionalHeader64->DataDirectory[1].VirtualAddress) + (ADWORD)pFileBuff);
+	}
+
+	
 
 	//遍历导入表
 	while (pImageImportDirectory->Name)
@@ -61,7 +92,7 @@ DWORD addDllListControlContent(HWND hwnd) {
 		lv.iItem = i;
 
 		//序号
-		wcsprintf(ptText, TEXT("%d"),i);
+		wcsprintf(ptText, TEXT("%d"),i + 1);
 		lv.pszText = ptText;
 		lv.iSubItem = 0;
 		ListView_InsertItem(hwnd, &lv);
@@ -104,6 +135,47 @@ DWORD addDllListControlContent(HWND hwnd) {
 }
 
 
-DWORD addFunListControlContent(HWND hwnd) {
+DWORD addFunListControlContent(HWND hDllList,HWND hFunList) {
+	PIMAGE_THUNK_DATA32 pImageThunk32 = NULL;
+	PIMAGE_THUNK_DATA64 pImageThunk64 = NULL;
+	DWORD dwRowNum = 0;
+	DWORD dwIATRva = 0;
+
+
+
+	//获取行号
+	dwRowNum = SendMessage(hDllList, LVM_GETNEXTITEM, -1, LVNI_SELECTED);
+
+	if (dwRowNum == -1)
+	{
+		return 0;
+	}
+
+	//获取IAT指针
+	ListView_GetItemText(hDllList, dwRowNum, 3, ptText, sizeof ptText);
+	swcscanf_s(ptText, TEXT("%08X"), &dwIATRva);
+
+	if (pImageOptionalHeader32->Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+	{
+		pImageThunk32 = (PIMAGE_THUNK_DATA32)(rvaToFoa(pFileBuff, dwIATRva) + (ADWORD)pFileBuff);
+		//遍历IAT表
+		while (pImageThunk32->u1.AddressOfData)
+		{
+			if (pImageThunk32->u1.AddressOfData & 0x80000000) 
+			{
+
+			}
+			pImageThunk32++;
+		}
+	}
+	else {
 	
+	}
+
+	
+	
+
+	
+
+	return 1;
 }

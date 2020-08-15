@@ -31,12 +31,8 @@ INT_PTR CALLBACK winProcOfDirectory(
 			DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_IMPORT), hwnd, winProcOfImport);
 			return TRUE;
 		}
-		default:
-			break;
 		}
 	}
-	default:
-		return FALSE;
 	}
 	return FALSE;
 }
@@ -62,21 +58,42 @@ DWORD addDirectory(HWND hwnd) {
 		{IDC_EDIT_RETAIN_RVA,IDC_EDIT_RETAIN_FOA,IDC_EDIT_RETAIN_SIZE}
 	};
 	int i = 0;
-
-	while (i < pImageOptionalHeader->NumberOfRvaAndSizes)
+	if (pImageOptionalHeader32->Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
 	{
-		//RVA
-		wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader->DataDirectory[i].VirtualAddress);
-		SetDlgItemText(hwnd, wItem[i][0], ptText);
+		while (i < pImageOptionalHeader32->NumberOfRvaAndSizes)
+		{
+			//RVA
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader32->DataDirectory[i].VirtualAddress);
+			SetDlgItemText(hwnd, wItem[i][0], ptText);
 
-		//FOA
-		wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff,pImageOptionalHeader->DataDirectory[i].VirtualAddress));
-		SetDlgItemText(hwnd, wItem[i][1], ptText);
+			//FOA
+			wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff, pImageOptionalHeader32->DataDirectory[i].VirtualAddress));
+			SetDlgItemText(hwnd, wItem[i][1], ptText);
 
-		//size
-		wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff, pImageOptionalHeader->DataDirectory[i].Size));
-		SetDlgItemText(hwnd, wItem[i][2], ptText);
-		i++;
+			//size
+			wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff, pImageOptionalHeader32->DataDirectory[i].Size));
+			SetDlgItemText(hwnd, wItem[i][2], ptText);
+			i++;
+		}
 	}
+	else {
+		while (i < pImageOptionalHeader64->NumberOfRvaAndSizes)
+		{
+			//RVA
+			wcsprintf(ptText, TEXT("%08X"), pImageOptionalHeader64->DataDirectory[i].VirtualAddress);
+			SetDlgItemText(hwnd, wItem[i][0], ptText);
+
+			//FOA
+			wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff, pImageOptionalHeader64->DataDirectory[i].VirtualAddress));
+			SetDlgItemText(hwnd, wItem[i][1], ptText);
+
+			//size
+			wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff, pImageOptionalHeader64->DataDirectory[i].Size));
+			SetDlgItemText(hwnd, wItem[i][2], ptText);
+			i++;
+		}
+	}
+
+
 	return i * 3;
 }

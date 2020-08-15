@@ -65,7 +65,7 @@ INT_PTR CALLBACK WindowsProc(
 			{
 				if (openFileName(ptText, sizeof ptText))	//文件对话框获取文件目录
 				{
-					DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEEDIT), hwnd, peEditWinProc);
+					DialogBox(hAPPInterface, MAKEINTRESOURCE(IDD_DIALOG_PEEDIT), hwnd, winProcPEEdit);
 				}
 				bFlag = FALSE;		//开关置0
 			}

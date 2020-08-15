@@ -35,7 +35,7 @@
 
 
 //PE编辑窗口消息处理回调函数
-INT_PTR CALLBACK peEditWinProc(
+INT_PTR CALLBACK winProcPEEdit(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,

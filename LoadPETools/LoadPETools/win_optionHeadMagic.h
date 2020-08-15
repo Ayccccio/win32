@@ -2,7 +2,7 @@
 #include "tools.h"
 
 //可选PE头Magic标志窗口消息回调函数
-INT_PTR CALLBACK peMagicWinProc(
+INT_PTR CALLBACK winProcPEMagic(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,

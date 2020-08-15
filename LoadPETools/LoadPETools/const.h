@@ -8,8 +8,6 @@
 #define ImportDllListControlColumNumber 8		//导入表DLL列表通用控件列数量 
 #define ImportFunListControlColumNumber 6		//导入表函数列表通用控件列数量 
 
-#define pImageOptionalHeader pImageOptionalHeader32
-
 
 
 extern HINSTANCE hAPPInterface;		//程序入口地址

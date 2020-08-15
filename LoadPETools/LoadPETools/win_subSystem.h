@@ -2,7 +2,7 @@
 #include "tools.h"
 
 //选择子系统窗口消息回调函数
-INT_PTR CALLBACK selectSubSystemWinProc(
+INT_PTR CALLBACK winProcSelectSubSystem(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,

@@ -11,3 +11,4 @@ INT_PTR CALLBACK winProcOfImport(
 
 DWORD addDllListControlContent(HWND hwnd);
 
+DWORD addFunListControlContent(HWND hDllList, HWND hFunList);

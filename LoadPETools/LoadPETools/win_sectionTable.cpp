@@ -1,6 +1,6 @@
 #include "win_sectionTable.h"
 
-INT_PTR CALLBACK WinProcOfSectionTable(
+INT_PTR CALLBACK winProcOfSectionTable(
 	HWND hwnd,
 	UINT uMsg,
 	WPARAM wParam,
@@ -14,7 +14,7 @@ INT_PTR CALLBACK WinProcOfSectionTable(
 	case WM_CLOSE:
 	{
 		EndDialog(hwnd, 0);
-		break;
+		return TRUE;
 	}
 	case WM_INITDIALOG: 
 	{
@@ -29,12 +29,11 @@ INT_PTR CALLBACK WinProcOfSectionTable(
 
 		//添加列表通用控件内容
 		addListControlOfSection(hListControl);
-		break;
+		return TRUE;
 	}
-	default:
-		return FALSE;
+	
 	}
-	return TRUE;
+	return FALSE;
 }
 
 
