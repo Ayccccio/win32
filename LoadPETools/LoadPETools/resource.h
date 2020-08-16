@@ -18,6 +18,7 @@
 #define IDC_BUTTON_LOGOUT               1003
 #define IDC_LIST_PROCESS                1004
 #define IDC_LIST_MOUDEL                 1005
+#define IDC_LIST_MOUDEL2                1006
 #define IDC_EDIT_ENTRY                  1007
 #define IDC_EDIT_BASE                   1008
 #define IDC_EDIT_FILESIZE               1009

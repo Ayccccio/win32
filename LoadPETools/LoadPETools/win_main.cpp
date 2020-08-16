@@ -11,7 +11,7 @@ INT_PTR CALLBACK WindowsProc(
 	HWND hProcessListCtrl = NULL;	//进程列表通用控件句柄
 	HWND hMoudelListCtrl = NULL;	//模块列表通用控件句柄
 
-	WORD pdProListCtrlColWidth[ProcessListControlColumNumber] = { 0,200,50,80,50,100,100 };		//进程列表通用控件列的宽度
+	WORD pdProListCtrlColWidth[ProcessListControlColumNumber] = { 50,200,50,80,50,100,100 };		//进程列表通用控件列的宽度
 	WORD pdMudListCtrlColWidth[MoudelListControlColumNumber] = { 50, 200,100,100,100 };			//模块列表通用控件列的宽度
 
 	NMHDR* pNmhdr;			//WM_NOTIFY 消息结构指针
@@ -129,11 +129,19 @@ DWORD addProcessListControlRow(HWND hListControl) {
 		bGetPro = Process32First(hProcessSnap, &processInfo);	//获取第一个进程
 		while (bGetPro)
 		{
-			//0
-			wcsprintf(ptText, TEXT("%03d"), i);
-			//lv.pszText = ptText;
-			lv.pszText = (LPWSTR)TEXT("");			//经测试第一列放变量会出现其他列不显示的情况
-			lv.iItem = 0;							//经测试这里改成行索引会出现显示不全
+			////0
+			//wcsprintf(ptText, TEXT("%03d"), i);
+			////lv.pszText = ptText;
+			//lv.pszText = (LPWSTR)TEXT("");			//经测试第一列放变量会出现其他列不显示的情况
+			//lv.iItem = 0;							//经测试这里改成行索引会出现显示不全
+			//lv.iSubItem = 0;
+			//ListView_InsertItem(hListControl, &lv);	//经测试只能在第一列设置空文本
+
+			lv.iItem = i;
+
+			//0.序号
+			wcsprintf(ptText, TEXT("%d"), i + 1);
+			lv.pszText = ptText;
 			lv.iSubItem = 0;
 			ListView_InsertItem(hListControl, &lv);	//经测试只能在第一列设置空文本
 
@@ -225,8 +233,9 @@ DWORD addMoudelListControlRow(HWND& hProcessListCtrl, HWND& hMoudelListCtrl) {
 	//5.遍历进程模块,添加模块信息到列表通用控件
 	while (i < dwMoudleCount)
 	{
+		lv.iItem = i;
 		//序号
-		wcsprintf(ptText, TEXT("%03d"), i);
+		wcsprintf(ptText, TEXT("%03d"), i + 1);
 		lv.pszText = ptText;
 		lv.iSubItem = 0;
 		ListView_InsertItem(hMoudelListCtrl, &lv);

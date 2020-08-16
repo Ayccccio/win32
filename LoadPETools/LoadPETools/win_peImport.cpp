@@ -167,7 +167,7 @@ DWORD addFunListControlContent(HWND hDllList,HWND hFunList) {
 		{
 			lv.iItem = wIndex;
 			//0.ÐòºÅ
-			wcsprintf(ptText, TEXT("%04X"), wIndex);
+			wcsprintf(ptText, TEXT("%d"), wIndex + 1);
 			lv.pszText = ptText;
 			lv.iSubItem = 0;
 			ListView_InsertItem(hFunList, &lv);
@@ -213,7 +213,7 @@ DWORD addFunListControlContent(HWND hDllList,HWND hFunList) {
 		{
 			lv.iItem = wIndex;
 			//0.ÐòºÅ
-			wcsprintf(ptText, TEXT("%04X"), wIndex);
+			wcsprintf(ptText, TEXT("%d"), wIndex + 1);
 			lv.pszText = ptText;
 			lv.iSubItem = 0;
 			ListView_InsertItem(hFunList, &lv);
