@@ -114,6 +114,8 @@ ADWORD foaToRva(IN VOID* pFileBuff, IN ADWORD dwFoa);
 ADWORD rvaToFoa(IN VOID* pFileBuff, IN ADWORD dwRva);
 
 
+DWORD64 rvaToFoa64(IN DWORD64* pFileBuff, IN DWORD64 dwRva);
+
 
 //************************************
 // Method:    getSectionName

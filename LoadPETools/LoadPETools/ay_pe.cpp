@@ -139,9 +139,10 @@ ADWORD foaToRva(IN VOID* pFileBuff,IN ADWORD dwFoa) {
 
 			do		//循环遍历节表
 			{
-				if (dwFoa >= pImageSectionHead->SizeOfRawData)	//判断foa是否在当前节块
+				if (dwFoa >= pImageSectionHead->PointerToRawData)	//判断foa是否在当前节块
 				{
-					dwRva = pImageSectionHead->VirtualAddress + dwFoa - pImageSectionHead->SizeOfRawData;
+					dwRva = dwFoa - pImageSectionHead->PointerToRawData + pImageSectionHead->VirtualAddress;
+					break;
 				}
 				pImageSectionHead--;
 				i--;
@@ -187,6 +188,43 @@ ADWORD rvaToFoa(IN VOID* pFileBuff, IN ADWORD dwRva) {
 	}
 	return dwFoa;
 }
+
+DWORD64 rvaToFoa64(IN DWORD64* pFileBuff, IN DWORD64 dwRva) {
+	PIMAGE_FILE_HEADER pImageFileHead = NULL;
+	PIMAGE_OPTIONAL_HEADER pImageOptionalHead = NULL;
+	PIMAGE_SECTION_HEADER pImageSectionHead = NULL;
+	int i = 0;
+	DWORD64 dwFoa = 0;
+
+	if (getPEHeader(pFileBuff, 0, &pImageFileHead, &pImageOptionalHead) != 2)	//获取PE头
+		return 0;
+
+	if (dwRva < pImageOptionalHead->SizeOfHeaders)		//判断rva是否在头部
+	{
+		return dwRva;
+	}
+	else if (dwRva >= pImageOptionalHead->SizeOfImage) {	//判断rva是否超出image大小
+		return 0;
+	}
+	else {
+		if (!getPELastSectionHeader(pFileBuff, pImageSectionHead))		//判断节表是否获取成功
+			return 0;
+
+		i = pImageFileHead->NumberOfSections;
+		while (i > 0)	//循环节表
+		{
+			if (dwRva >= pImageSectionHead->VirtualAddress)		//判断rva是否在当前节块
+			{
+				dwFoa = dwRva - pImageSectionHead->VirtualAddress + pImageSectionHead->PointerToRawData;
+				break;
+			}
+			pImageSectionHead--;
+			i--;
+		}
+	}
+	return dwFoa;
+}
+
 
 
 DWORD getSectionName(PIMAGE_SECTION_HEADER pImageSectionHead, PTCHAR* ptBuff, DWORD dwBuffSize) {

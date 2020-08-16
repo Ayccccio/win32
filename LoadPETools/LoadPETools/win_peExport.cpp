@@ -104,10 +104,11 @@ DWORD addExportListContent(HWND hwnd) {
 	lv.mask = LVIF_TEXT;
 	int i = 0;
 	int j = 0;
+	DWORD dwItemIndex = 0;
 
-	PDWORD pdwFun = NULL;
-	PDWORD pdwFunName = NULL;
-	PWORD pdwFunNameOrd = NULL;
+	PDWORD pdwFunAddr = NULL;
+	PDWORD pdwFunNameAddr = NULL;
+	PWORD pdwFunNameOrdAddr = NULL;
 	PCHAR pFunName = NULL;
 	PTCHAR ptTemp = ptText;
 
@@ -116,9 +117,9 @@ DWORD addExportListContent(HWND hwnd) {
 		return 0;
 	}
 
-	pdwFun = (PDWORD)((ADWORD)pFileBuff + rvaToFoa(pFileBuff, pImageExportDirectory->AddressOfFunctions));
-	pdwFunName = (PDWORD)((ADWORD)pFileBuff + rvaToFoa(pFileBuff, pImageExportDirectory->AddressOfNames));
-	pdwFunNameOrd = (PWORD)((ADWORD)pFileBuff + rvaToFoa(pFileBuff, pImageExportDirectory->AddressOfNameOrdinals));
+	pdwFunAddr = (PDWORD)((ADWORD)pFileBuff + rvaToFoa(pFileBuff, pImageExportDirectory->AddressOfFunctions));
+	pdwFunNameAddr = (PDWORD)((ADWORD)pFileBuff + rvaToFoa(pFileBuff, pImageExportDirectory->AddressOfNames));
+	pdwFunNameOrdAddr = (PWORD)((ADWORD)pFileBuff + rvaToFoa(pFileBuff, pImageExportDirectory->AddressOfNameOrdinals));
 
 
 	//遍历函数地址
@@ -127,19 +128,26 @@ DWORD addExportListContent(HWND hwnd) {
 		pFunName = NULL;
 		j = 0;
 
+		if (*(pdwFunAddr + i) == 0)		//判断函数是否有效
+		{
+			i++;
+			dwItemIndex++;
+			continue;
+		}
+
 		//遍历函数序号表
 		while (j < pImageExportDirectory->NumberOfNames)
 		{
 			//判断序号表中是否有当前函数序号
-			if (*(pdwFunNameOrd + j) == i)
+			if (*(pdwFunNameOrdAddr + j) == i)
 			{
-				pFunName = (PCHAR) (rvaToFoa(pFileBuff, *(pdwFunName + i)) + (ADWORD)pFileBuff);
+				pFunName = (PCHAR) (rvaToFoa(pFileBuff, *(pdwFunNameAddr + j)) + (ADWORD)pFileBuff);
 				break;
 			}
 			j++;
 		}
 
-		lv.iItem = i;
+		lv.iItem = i - dwItemIndex;
 		//1.函数序号
 		wcsprintf(ptText, TEXT("%d"), i + pImageExportDirectory->Base);
 		lv.pszText = ptText;
@@ -147,13 +155,13 @@ DWORD addExportListContent(HWND hwnd) {
 		ListView_InsertItem(hwnd, &lv);
 
 		//2.rva
-		wcsprintf(ptText, TEXT("%08X"), *(pdwFun + i));
+		wcsprintf(ptText, TEXT("%08X"), *(pdwFunAddr + i));
 		lv.pszText = ptText;
 		lv.iSubItem = 1;
 		ListView_SetItem(hwnd, &lv);
 
 		//3.foa
-		wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff, *(pdwFun + i)));
+		wcsprintf(ptText, TEXT("%08X"), rvaToFoa(pFileBuff, *(pdwFunAddr + i)));
 		lv.pszText = ptText;
 		lv.iSubItem = 2;
 		ListView_SetItem(hwnd, &lv);

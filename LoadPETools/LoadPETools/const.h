@@ -6,7 +6,7 @@
 #define SectionListControlColumNumber 6		//节块通用控件列数量 
 #define ExportListControlColumNumber 4		//节块通用控件列数量 
 #define ImportDllListControlColumNumber 8		//导入表DLL列表通用控件列数量 
-#define ImportFunListControlColumNumber 6		//导入表函数列表通用控件列数量 
+#define ImportFunListControlColumNumber 5		//导入表函数列表通用控件列数量 
 
 
 

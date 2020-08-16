@@ -7,7 +7,7 @@ INT_PTR CALLBACK winProcOfImport(
 	LPARAM lParam)
 {
 	WORD pwDllWidths[ImportDllListControlColumNumber] = {50, 100,80,80,80,80,80,80 };
-	WORD pwFunWidths[ImportFunListControlColumNumber] = {50, 80,80,80,50,200 };
+	WORD pwFunWidths[ImportFunListControlColumNumber] = {50, 80,80,50,200 };
 	HWND hDllListControl;
 	HWND hFunListControl;
 	NMHDR* pNmhdr;
@@ -31,7 +31,7 @@ INT_PTR CALLBACK winProcOfImport(
 
 		//初始化列表通用控件表头
 		initListControlHeader(hDllListControl, ImportDllListControlColumNumber, (PTCHAR)TEXT("序号\0DLL名称\0INT\0IAT\0时间戳\0DLL依赖\0特征"), pwDllWidths);
-		initListControlHeader(hFunListControl, ImportFunListControlColumNumber, (PTCHAR)TEXT("序号\0RVA\0FOA\0VALUE\0HINT\0函数名"), pwFunWidths);
+		initListControlHeader(hFunListControl, ImportFunListControlColumNumber, (PTCHAR)TEXT("序号\0Thunk Rva\0Thunk value\0HINT\0函数名"), pwFunWidths);
 
 		//添加Dll列表内容
 		addDllListControlContent(hDllListControl);
@@ -48,7 +48,7 @@ INT_PTR CALLBACK winProcOfImport(
 			hDllListControl = GetDlgItem(hwnd, IDC_LIST_IMPORT_DLL);
 			hFunListControl = GetDlgItem(hwnd, IDC_LIST_IMPORT_FUN);
 
-			if (pNmhdr->code = NM_CLICK)	//dll列表控件被点击
+			if (pNmhdr->code == NM_CLICK)	//dll列表控件被点击
 			{
 				//清楚funList内容
 				ListView_DeleteAllItems(hFunListControl);
@@ -138,10 +138,14 @@ DWORD addDllListControlContent(HWND hwnd) {
 DWORD addFunListControlContent(HWND hDllList,HWND hFunList) {
 	PIMAGE_THUNK_DATA32 pImageThunk32 = NULL;
 	PIMAGE_THUNK_DATA64 pImageThunk64 = NULL;
+	PIMAGE_IMPORT_BY_NAME pImageImportByName = NULL;
 	DWORD dwRowNum = 0;
 	DWORD dwIATRva = 0;
+	DWORD dwThunkRva = 0;
 
-
+	WORD wIndex = 0;
+	LVITEM lv = { 0 };
+	lv.mask = LVIF_TEXT;
 
 	//获取行号
 	dwRowNum = SendMessage(hDllList, LVM_GETNEXTITEM, -1, LVNI_SELECTED);
@@ -161,21 +165,93 @@ DWORD addFunListControlContent(HWND hDllList,HWND hFunList) {
 		//遍历IAT表
 		while (pImageThunk32->u1.AddressOfData)
 		{
-			if (pImageThunk32->u1.AddressOfData & 0x80000000) 
-			{
+			lv.iItem = wIndex;
+			//0.序号
+			wcsprintf(ptText, TEXT("%04X"), wIndex);
+			lv.pszText = ptText;
+			lv.iSubItem = 0;
+			ListView_InsertItem(hFunList, &lv);
 
+			//1.Thunk Rva
+			dwThunkRva = foaToRva(pFileBuff, (ADWORD)pImageThunk32 - (ADWORD)pFileBuff);
+			wcsprintf(ptText, TEXT("%08X"), dwThunkRva);
+			lv.pszText = ptText;
+			lv.iSubItem = 1;
+			ListView_SetItem(hFunList, &lv);
+
+			
+			//2.Thunk value
+			wcsprintf(ptText, TEXT("%08X"), pImageThunk32->u1.AddressOfData);
+			lv.pszText = ptText;
+			lv.iSubItem = 2;
+			ListView_SetItem(hFunList, &lv);
+
+			if (!(pImageThunk32->u1.AddressOfData & 0x80000000))
+			{
+				pImageImportByName = (PIMAGE_IMPORT_BY_NAME)(rvaToFoa(pFileBuff, pImageThunk32->u1.AddressOfData) + (ADWORD)pFileBuff);
+
+				//3.Thunk HINT
+				wcsprintf(ptText, TEXT("%04X"), pImageImportByName->Hint);
+				lv.pszText = ptText;
+				lv.iSubItem = 3;
+				ListView_SetItem(hFunList, &lv);
+
+				//4.Function Name
+				MultiByteToWideChar(CP_UTF8, 0, pImageImportByName->Name, -1, ptText, sizeof ptText);
+				lv.pszText = ptText;
+				lv.iSubItem = 4;
+				ListView_SetItem(hFunList, &lv);
 			}
 			pImageThunk32++;
+			wIndex++;
 		}
 	}
 	else {
-	
+		pImageThunk64 = (PIMAGE_THUNK_DATA64)(rvaToFoa(pFileBuff, dwIATRva) + (ADWORD)pFileBuff);
+		//遍历IAT表
+		while (pImageThunk64->u1.AddressOfData)
+		{
+			lv.iItem = wIndex;
+			//0.序号
+			wcsprintf(ptText, TEXT("%04X"), wIndex);
+			lv.pszText = ptText;
+			lv.iSubItem = 0;
+			ListView_InsertItem(hFunList, &lv);
+
+			//1.Thunk Rva
+			dwThunkRva = foaToRva(pFileBuff, (ADWORD)pImageThunk64 - (ADWORD)pFileBuff);
+			wcsprintf(ptText, TEXT("%08X"), dwThunkRva);
+			lv.pszText = ptText;
+			lv.iSubItem = 1;
+			ListView_SetItem(hFunList, &lv);
+
+
+			//2.Thunk value
+			wcsprintf(ptText, TEXT("%08X"), pImageThunk64->u1.AddressOfData);
+			lv.pszText = ptText;
+			lv.iSubItem = 2;
+			ListView_SetItem(hFunList, &lv);
+
+			if (!(pImageThunk64->u1.AddressOfData & 0x8000000000000000))
+			{
+				pImageImportByName = (PIMAGE_IMPORT_BY_NAME)(rvaToFoa(pFileBuff, pImageThunk64->u1.AddressOfData) + (ADWORD)pFileBuff);
+
+				//3.Thunk HINT
+				wcsprintf(ptText, TEXT("%04X"), pImageImportByName->Hint);
+				lv.pszText = ptText;
+				lv.iSubItem = 3;
+				ListView_SetItem(hFunList, &lv);
+
+				//4.Function Name
+				MultiByteToWideChar(CP_UTF8, 0, pImageImportByName->Name, -1, ptText, sizeof ptText);
+				lv.pszText = ptText;
+				lv.iSubItem = 4;
+				ListView_SetItem(hFunList, &lv);
+			}
+			pImageThunk64++;
+			wIndex++;
+		}
 	}
 
-	
-	
-
-	
-
-	return 1;
+	return wIndex;
 }
