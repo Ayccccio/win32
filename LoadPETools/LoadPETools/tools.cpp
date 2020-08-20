@@ -2,19 +2,18 @@
 
 
 DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames,PWORD pdColWidths) {
-	LVCOLUMN lvCol = { 0 };
+	LVCOLUMN lvCol = { 0 };		//列表通用控件列对象
 	int i = 0;
-	PTCHAR ptTemp = ptColumNames;
 
 	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM | LVCFMT_RIGHT;
 
 	while (i < dwLenth)
 	{
-		lvCol.pszText = ptTemp;
-		lvCol.cx = pdColWidths[i];
-		lvCol.iSubItem = i;
+		lvCol.pszText = ptColumNames;	//列名
+		lvCol.cx = pdColWidths[i];		//列宽
+		lvCol.iSubItem = i;				//列索引
 		ListView_InsertColumn(hListControl,i, &lvCol);
-		ptTemp += StrLen(ptTemp) + 1;
+		ptColumNames += StrLen(ptColumNames) + 1;
 		i++;
 	}
 	return i;
