@@ -16,7 +16,6 @@ DWORD dwIndex[ThreadNum] = { 0,1,2 };	//线程索引,线程回调函数参数传值
 //开始线程
 DWORD WINAPI threadProcOfStart(LPVOID lParameter) {
 
-	//ghMutex = OpenMutex(MUTEX_ALL_ACCESS, FALSE, NULL);
 	while (1)		//总数是否满足条件
 	{
 
@@ -117,6 +116,6 @@ int CALLBACK WinMain(
 	LPSTR     lpCmdLine,
 	int       nShowCmd)
 {
-	ghMutex = CreateMutex(NULL, FALSE, NULL);
+	ghMutex = CreateMutex(NULL, FALSE, NULL);		//创建互斥体
 	DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MAIN), NULL, winProcOfWinMain);
 }
