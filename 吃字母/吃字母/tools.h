@@ -6,10 +6,6 @@
 #include <TlHelp32.h>
 #include <Psapi.h>
 #include <commctrl.h>
-#include "ay_pe.h"
-#include "ay_io.h"
-#include "const.h"
-#include "resource.h"
 #pragma comment(lib,"comctl32.lib")	
 #pragma comment(lib, "shlwapi")
 
@@ -34,12 +30,6 @@
 #endif
 
 
-//PE编辑窗口消息处理回调函数
-INT_PTR CALLBACK winProcPEEdit(
-	HWND hwnd,
-	UINT uMsg,
-	WPARAM wParam,
-	LPARAM lParam);
 
 //************************************
 // Method:    initListControlHeader

@@ -2,18 +2,19 @@
 
 
 DWORD initListControlHeader(HWND hListControl,DWORD dwLenth,PTCHAR ptColumNames,PWORD pdColWidths) {
-	LVCOLUMN lvCol = { 0 };		//列表通用控件列对象
+	LVCOLUMN lvCol = { 0 };
 	int i = 0;
+	PTCHAR ptTemp = ptColumNames;
 
 	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM | LVCFMT_RIGHT;
 
 	while (i < dwLenth)
 	{
-		lvCol.pszText = ptColumNames;	//列名
-		lvCol.cx = pdColWidths[i];		//列宽
-		lvCol.iSubItem = i;				//列索引
+		lvCol.pszText = ptTemp;
+		lvCol.cx = pdColWidths[i];
+		lvCol.iSubItem = i;
 		ListView_InsertColumn(hListControl,i, &lvCol);
-		ptColumNames += StrLen(ptColumNames) + 1;
+		ptTemp += StrLen(ptTemp) + 1;
 		i++;
 	}
 	return i;
@@ -59,7 +60,6 @@ DWORD addListControlRow(HWND hListControl,DWORD dwRow, DWORD dwCol, PTCHAR ptTex
 }
 
 BOOL openFileName(PTCHAR ptText,DWORD dwBuffSize) {
-	bFlag = TRUE;
 	OPENFILENAME ofn = { 0 };					//文件选择对话框结构
 
 	//初始化OPENFILENAME结构
