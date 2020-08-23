@@ -1,146 +1,153 @@
 #include "resource.h"
 #include "tools.h"
 
-#define SetBuffThreadNum 2
-#define GetBuffThreadNum 4
+#define ProducterThreadNum 2
+#define CustomerThreadNum 4
 
 
 TCHAR ptStr[256] = { 0 };		//字符串
 PTCHAR ptStrPoint = NULL;		//字符串指针
-TCHAR ptBuff[SetBuffThreadNum][2] = { 0 };		//保存2个缓冲区字符
-TCHAR ptTexts[GetBuffThreadNum][128] = { 0 };		//线程吃掉的字符
-CRITICAL_SECTION cs = { 0 };	//临界区
-HANDLE ghSignal;				//取缓冲区字符信号量
-HANDLE ghSetbuffSignal;				//设置缓冲区字符信号量
 
-HWND hMain;			//主窗口句柄
-WORD pwDlgItemIdsOfSetBuff[SetBuffThreadNum] = { IDC_EDIT_BUFF1 ,IDC_EDIT_BUFF2};	//缓冲区编辑框窗口id
-WORD pwDlgItemIdsOfGetBuff[GetBuffThreadNum] = { IDC_EDIT_THREAD1 ,IDC_EDIT_THREAD2,IDC_EDIT_THREAD3,IDC_EDIT_THREAD4 };
-HANDLE hSetBuffThreads[SetBuffThreadNum] = { 0 };		//设置缓冲区线程数组
-HANDLE hGetBuffThreads[GetBuffThreadNum] = { 0 };		//获取缓冲区字符线程数组
+TCHAR ptProducter[ProducterThreadNum][2] = { 0 };			//生产者字符
+TCHAR ptCustomer[CustomerThreadNum][128] = { 0 };		//消费者字符
+CRITICAL_SECTION cs = { 0 };			//临界区
+HANDLE ghSignalOfProducter;				//生产者信号量
+HANDLE ghSignalOfCustomer;				//消费者信号量
 
-//设置缓冲区字符到编辑框线程
-DWORD WINAPI threadOfSetBuff(LPVOID lParameter) {
-	DWORD dwStrLen;
+HWND hEditOfStr;	//字符串编辑框句柄
+HWND hBtnOfStart;	//开始按钮句柄
+HWND hEditOfProducter[ProducterThreadNum] = { 0 };		//生产者编辑框窗口句柄
+HWND hEditOfCustomer[CustomerThreadNum] = { 0 };		//消费者编辑框窗口句柄
+HANDLE hProducterThreads[ProducterThreadNum] = { 0 };	//生产者线程数组
+HANDLE hCustomerThreads[CustomerThreadNum] = { 0 };		//获消费者线程数组
+
+//生产者线程
+DWORD WINAPI threadProOfProducter(LPVOID lParameter) {
+	//字符串取完线程结束
 	while (1)
 	{
+		//从字符串取字符设置到生产者编辑框和缓冲区
 
-		WaitForSingleObject(ghSetbuffSignal, -1);
+		WaitForSingleObject(ghSignalOfProducter, -1);
 
-		//进入临界区
 		EnterCriticalSection(&cs);
-
-		//获取字符长度,判断是否还有字符
-		dwStrLen = StrLen(ptStrPoint);
- 		if (dwStrLen == 0)
+		//判断字符串是否取完,线程结束条件
+		if (*ptStrPoint == '\0')
+		{
+			ReleaseSemaphore(ghSignalOfCustomer, 1, NULL);
+			LeaveCriticalSection(&cs);
 			break;
+		}
+		//判断当前生产者字符中是否有字符
+		if (ptProducter[(DWORD)lParameter][0] == '\0')
+		{
+			//取字符
+			ptProducter[(DWORD)lParameter][0] = *ptStrPoint;
 
-		//取首个字符到缓冲区
-		ptBuff[(DWORD)lParameter][0] = *ptStrPoint;
-		ptStrPoint++;
+			//设置字符到编辑框
+			SetWindowText(hEditOfProducter[(DWORD)lParameter], ptProducter[(DWORD)lParameter]);
 
-		//设置字符到缓冲区编辑框
-		SetDlgItemText(hMain, pwDlgItemIdsOfSetBuff[(DWORD)lParameter], ptBuff[(DWORD)lParameter]);
+			//取到了字符,字符串右移
+			ptStrPoint++;
 
-		Sleep(200);
-
-
-		//信号量加1,增加一个线程运行,信号量加1放释放临界区前面是为了避免准备妥当了,获取缓冲区字符线程却还不执行
-		ReleaseSemaphore(ghSignal, 1, NULL);	
-		
-		//释放临界区
+			ReleaseSemaphore(ghSignalOfCustomer, 1, NULL);
+		}
 		LeaveCriticalSection(&cs);
-
 	}
 	return 0;
 }
 
-//取缓冲区字符线程
-DWORD WINAPI threadOfGetBuff(LPVOID lParameter) {
+
+//消费者线程
+DWORD WINAPI threadProOfCustomer(LPVOID lParameter) {
+	//取生产者字符,放自身字符里.生产者字符置0
+
+	DWORD dwI = 0;
 	while (1)
 	{
-		//拦截信号量
-		WaitForSingleObject(ghSignal, -1);
-
-		//进入临界区
+		if (WaitForSingleObject(ghSignalOfCustomer, 2000) == WAIT_TIMEOUT)
+		{
+			break;
+		}
+		//WaitForSingleObject(ghSignalOfCustomer, -1);
 		EnterCriticalSection(&cs);
 
-		//取缓冲区字符,放到自身缓冲区中
-		if (ptBuff[0][0] != TEXT('\0'))
+		Sleep(50);
+		//遍历生产者字符
+		while (dwI < ProducterThreadNum)
 		{
-			StrCat(ptTexts[(DWORD)lParameter], ptBuff[0]);
-			ptBuff[0][0] = TEXT('\0');
-			SetDlgItemText(hMain, pwDlgItemIdsOfSetBuff[0], TEXT(""));
-		}
-		else if (ptBuff[1][0] != TEXT('\0'))
-		{
-			StrCat(ptTexts[(DWORD)lParameter], ptBuff[1]);
-			ptBuff[1][0] = TEXT('\0');
-			SetDlgItemText(hMain, pwDlgItemIdsOfSetBuff[1], TEXT(""));
-		}
-		else {
-			if (WaitForMultipleObjects(SetBuffThreadNum, hSetBuffThreads, TRUE, 1000) == WAIT_OBJECT_0)
+			if (ptProducter[dwI][0] != '\0')
 			{
+				//取字符
+				StrCat(ptCustomer[(DWORD)lParameter], ptProducter[dwI]);
+
+				//设置字符到编辑框
+				SetWindowText(hEditOfCustomer[(DWORD)lParameter], ptCustomer[(DWORD)lParameter]);
+
+				//生产者字符置0
+				ptProducter[dwI][0] = '\0';
+				//生产者编辑框置空
+				SetWindowText(hEditOfProducter[dwI], TEXT(""));
+
+				//生产者信号量加1,继续生产
+				ReleaseSemaphore(ghSignalOfProducter, 1, NULL);
+				
 				break;
 			}
-			else {
-				LeaveCriticalSection(&cs);
-				continue;
-			}
+			dwI++;
 		}
-		SetDlgItemText(hMain, pwDlgItemIdsOfGetBuff[(DWORD)lParameter], ptTexts[(DWORD)lParameter]);
-		Sleep(200);
-
-		//设置缓冲区信号量加1,让缓冲区可以得到填充
-		ReleaseSemaphore(ghSetbuffSignal, 1, NULL);
-
-		//释放临界区
 		LeaveCriticalSection(&cs);
 	}
 	return 0;
 }
 
 
-//线程控制函数
-DWORD WINAPI threadCtrl(LPVOID lParameter) 
-{
-	DWORD dwGetBuffThreadNum = 0;
-	DWORD dwSetBuffThreadNum = 0;
+//主控制线程
+DWORD WINAPI threadProOfControl(LPVOID lParameter) {
+	DWORD dwThreadNum = 0;
 
-	//创建抢缓冲区字符线程
-	while (dwGetBuffThreadNum < GetBuffThreadNum)
+	ghSignalOfProducter = CreateSemaphore(NULL, 2, 2, NULL);
+	ghSignalOfCustomer = CreateSemaphore(NULL, 0, 4, NULL);
+
+	InitializeCriticalSection(&cs);
+
+
+	//创建生产者线程
+	while (dwThreadNum < ProducterThreadNum)
 	{
-		hGetBuffThreads[dwGetBuffThreadNum] = CreateThread(NULL, 0, threadOfGetBuff, (LPVOID)(dwGetBuffThreadNum), 0, NULL);
-		dwGetBuffThreadNum++;
+		hProducterThreads[dwThreadNum] = CreateThread(NULL, 0, threadProOfProducter, (LPVOID)dwThreadNum, 0, NULL);
+		dwThreadNum++;
 	}
 
-	//创建设置字符缓冲区线程
-	while (dwSetBuffThreadNum < SetBuffThreadNum)
+	//创建消费者线程
+	dwThreadNum = 0;
+	while (dwThreadNum < CustomerThreadNum)
 	{
-		hSetBuffThreads[dwSetBuffThreadNum] = CreateThread(NULL, 0, threadOfSetBuff, (LPVOID)(dwSetBuffThreadNum), 0, NULL);
-		dwSetBuffThreadNum++;
+		hCustomerThreads[dwThreadNum] = CreateThread(NULL, 0, threadProOfCustomer, (LPVOID)dwThreadNum, 0, NULL);
+		dwThreadNum++;
 	}
 
-	
-	//阻塞设置缓冲区线程
-	WaitForMultipleObjects(SetBuffThreadNum, hSetBuffThreads, TRUE, -1);
-	dwSetBuffThreadNum = 0;
-	while (dwSetBuffThreadNum < SetBuffThreadNum)
+	//判断线程是否结束
+	WaitForMultipleObjects(ProducterThreadNum, hProducterThreads, TRUE, -1);
+	dwThreadNum = 0;
+	while (dwThreadNum < ProducterThreadNum)
 	{
-		CloseHandle(hSetBuffThreads[dwSetBuffThreadNum]);
+		CloseHandle(hProducterThreads[dwThreadNum]);
+		dwThreadNum++;
 	}
 
-	WaitForMultipleObjects(GetBuffThreadNum, hGetBuffThreads, TRUE, -1);
-	dwGetBuffThreadNum = 0;
-	while (dwGetBuffThreadNum < GetBuffThreadNum)
+	WaitForMultipleObjects(CustomerThreadNum, hCustomerThreads, TRUE, -1);
+	dwThreadNum = 0;
+	while (dwThreadNum < CustomerThreadNum)
 	{
-		CloseHandle(hGetBuffThreads[dwGetBuffThreadNum]);
+		CloseHandle(hCustomerThreads[dwThreadNum]);
+		dwThreadNum++;
 	}
+	CloseHandle(ghSignalOfCustomer);
+	CloseHandle(ghSignalOfProducter);
+	DeleteCriticalSection(&cs);
 
-	
-
-	EnableWindow(GetDlgItem(hMain, IDC_BUTTON_START), TRUE);
-
+	EnableWindow(hBtnOfStart, TRUE);
 	return 0;
 }
 
@@ -156,16 +163,27 @@ INT_PTR CALLBACK winProcOfMain(
 	{
 	case WM_CLOSE:
 	{
-		CloseHandle(ghSignal);
+		DeleteCriticalSection(&cs);
+		CloseHandle(ghSignalOfProducter);
+		CloseHandle(ghSignalOfCustomer);
 		EndDialog(hwnd, 0);
 		return TRUE;
 	}
 	case WM_INITDIALOG:
 	{
-		SetDlgItemText(hwnd, IDC_EDIT_STR, TEXT("AB"));
-		hMain = hwnd;
-		ghSignal = CreateSemaphore(NULL, 0, 4, NULL);
-		ghSetbuffSignal = CreateSemaphore(NULL, 2, 2, NULL);
+
+		hEditOfProducter[0] = GetDlgItem(hwnd, IDC_EDIT_BUFF1);
+		hEditOfProducter[1] = GetDlgItem(hwnd, IDC_EDIT_BUFF2);
+
+		hEditOfCustomer[0] = GetDlgItem(hwnd, IDC_EDIT_THREAD1);
+		hEditOfCustomer[1] = GetDlgItem(hwnd, IDC_EDIT_THREAD2);
+		hEditOfCustomer[2] = GetDlgItem(hwnd, IDC_EDIT_THREAD3);
+		hEditOfCustomer[3] = GetDlgItem(hwnd, IDC_EDIT_THREAD4);
+
+		hEditOfStr = GetDlgItem(hwnd, IDC_EDIT_STR);
+		hBtnOfStart = GetDlgItem(hwnd, IDC_BUTTON1);
+
+		SetDlgItemText(hwnd, IDC_EDIT_STR, TEXT("ABCDEF"));
 		return TRUE;
 	}
 	case WM_COMMAND:
@@ -174,12 +192,16 @@ INT_PTR CALLBACK winProcOfMain(
 		{
 		case IDC_BUTTON_START:
 		{
-			EnableWindow(GetDlgItem(hwnd, IDC_BUTTON_START),FALSE);
+			EnableWindow(hBtnOfStart,FALSE);
+
+			//获取字符串文本框内容到ptStr
 			GetDlgItemText(hwnd, IDC_EDIT_STR, ptStr, sizeof ptStr);
+			//字符串指针
 			ptStrPoint = ptStr;
+
 			if (StrLen(ptStr))
 			{
-				CloseHandle(CreateThread(NULL, 0, threadCtrl, NULL, 0, NULL));
+				CloseHandle(CreateThread(NULL, 0, threadProOfControl, NULL, 0, NULL));
 			}
 			return TRUE;
 		}
@@ -195,6 +217,5 @@ int CALLBACK WinMain(
 	LPSTR     lpCmdLine,
 	int       nShowCmd)
 {
-	InitializeCriticalSection(&cs);
 	DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, winProcOfMain);
 }
