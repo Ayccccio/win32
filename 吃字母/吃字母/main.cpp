@@ -16,15 +16,16 @@ HANDLE ghSignalOfCustomer;				//消费者信号量
 
 HWND hEditOfStr;	//字符串编辑框句柄
 HWND hBtnOfStart;	//开始按钮句柄
+HWND hBtnOfReset;	//重置按钮句柄
 HWND hEditOfProducter[ProducterThreadNum] = { 0 };		//生产者编辑框窗口句柄
 HWND hEditOfCustomer[CustomerThreadNum] = { 0 };		//消费者编辑框窗口句柄
 HANDLE hProducterThreads[ProducterThreadNum] = { 0 };	//生产者线程数组
 HANDLE hCustomerThreads[CustomerThreadNum] = { 0 };		//获消费者线程数组
 
-BOOL bCustomerThreadQuit = FALSE;
 
 //生产者线程
 DWORD WINAPI threadProOfProducter(LPVOID lParameter) {
+	DWORD dwI = 0;
 	//字符串取完线程结束
 	while (1)
 	{
@@ -36,11 +37,14 @@ DWORD WINAPI threadProOfProducter(LPVOID lParameter) {
 		//判断字符串是否取完,线程结束条件
 		if (*ptStrPoint == '\0')
 		{
-			bCustomerThreadQuit = TRUE;
 			LeaveCriticalSection(&cs);
 
-			//避免消费者线程获取不到信号量卡死
-			ReleaseSemaphore(ghSignalOfCustomer, 4, NULL);
+			//增加消费者线程,避免消费者线程获取不到信号量卡死. 循环是为了每次加1确保消费者线程信号量能加到最大
+			while (dwI < CustomerThreadNum)
+			{
+				ReleaseSemaphore(ghSignalOfCustomer, 1, NULL);
+				dwI++;
+			}
 			break;
 		}
 		//判断当前生产者字符中是否有字符
@@ -72,7 +76,8 @@ DWORD WINAPI threadProOfCustomer(LPVOID lParameter) {
 	{
 		/*if (WaitForSingleObject(ghSignalOfCustomer, 2000) == WAIT_TIMEOUT)
 		{
-			break;
+			ReleaseSemaphore(ghSignalOfProducter, 1, NULL);
+			continue;
 		}*/
 		WaitForSingleObject(ghSignalOfCustomer, -1);
 		
@@ -104,16 +109,18 @@ DWORD WINAPI threadProOfCustomer(LPVOID lParameter) {
 		LeaveCriticalSection(&cs);
 
 		//判断字符串是否取完,取完生产者线程信号量继续加1避免生产者线程获取不到信号卡死
+		dwI = 0;
 		if (*ptStrPoint == '\0')
 		{
-			ReleaseSemaphore(ghSignalOfProducter, 1, NULL);
+			while (dwI < ProducterThreadNum)	//循环增加信号量,包装信号量增加到最大值
+			{
+				ReleaseSemaphore(ghSignalOfProducter, 1, NULL);
+				dwI++;
+			}
 			break;
 		}
 
 
-		/*if (bCustomerThreadQuit)
-		{
-		}*/
 	}
 	return 0;
 }
@@ -170,6 +177,8 @@ DWORD WINAPI threadProOfControl(LPVOID lParameter) {
 	DeleteCriticalSection(&cs);
 
 	EnableWindow(hBtnOfStart, TRUE);
+	//SendMessage(hBtnOfReset, BM_CLICK, NULL, NULL);
+	//SendMessage(hBtnOfStart, BM_CLICK, NULL, NULL);
 	return 0;
 }
 
@@ -202,6 +211,7 @@ INT_PTR CALLBACK winProcOfMain(
 
 		hEditOfStr = GetDlgItem(hwnd, IDC_EDIT_STR);
 		hBtnOfStart = GetDlgItem(hwnd, IDC_BUTTON1);
+		hBtnOfReset = GetDlgItem(hwnd, IDC_BUTTON_RESET);
 
 		SetDlgItemText(hwnd, IDC_EDIT_STR, TEXT("ABCDEF"));
 		return TRUE;
@@ -212,7 +222,8 @@ INT_PTR CALLBACK winProcOfMain(
 		{
 		case IDC_BUTTON_START:
 		{
-			EnableWindow(hBtnOfStart,FALSE);
+
+			EnableWindow(hBtnOfStart, FALSE);
 
 			//获取字符串文本框内容到ptStr
 			GetDlgItemText(hwnd, IDC_EDIT_STR, ptStr, sizeof ptStr);
@@ -223,6 +234,7 @@ INT_PTR CALLBACK winProcOfMain(
 			{
 				CloseHandle(CreateThread(NULL, 0, threadProOfControl, NULL, 0, NULL));
 			}
+
 			return TRUE;
 		}
 		case IDC_BUTTON_RESET: 
