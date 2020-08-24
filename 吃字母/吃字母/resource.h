@@ -13,6 +13,8 @@
 #define IDC_EDIT_THREAD4                1007
 #define IDC_BUTTON1                     1008
 #define IDC_BUTTON_START                1008
+#define IDC_BUTTON_START2               1009
+#define IDC_BUTTON_RESET                1009
 
 // Next default values for new objects
 // 

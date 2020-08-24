@@ -34,7 +34,6 @@ DWORD WINAPI threadProOfProducter(LPVOID lParameter) {
 		//判断字符串是否取完,线程结束条件
 		if (*ptStrPoint == '\0')
 		{
-			ReleaseSemaphore(ghSignalOfCustomer, 1, NULL);
 			LeaveCriticalSection(&cs);
 			break;
 		}
@@ -44,11 +43,11 @@ DWORD WINAPI threadProOfProducter(LPVOID lParameter) {
 			//取字符
 			ptProducter[(DWORD)lParameter][0] = *ptStrPoint;
 
-			//设置字符到编辑框
-			SetWindowText(hEditOfProducter[(DWORD)lParameter], ptProducter[(DWORD)lParameter]);
-
 			//取到了字符,字符串右移
 			ptStrPoint++;
+
+			//设置字符到编辑框
+			SetWindowText(hEditOfProducter[(DWORD)lParameter], ptProducter[(DWORD)lParameter]);
 
 			ReleaseSemaphore(ghSignalOfCustomer, 1, NULL);
 		}
@@ -89,13 +88,16 @@ DWORD WINAPI threadProOfCustomer(LPVOID lParameter) {
 				//生产者编辑框置空
 				SetWindowText(hEditOfProducter[dwI], TEXT(""));
 
-				//生产者信号量加1,继续生产
-				ReleaseSemaphore(ghSignalOfProducter, 1, NULL);
+				
 				
 				break;
 			}
 			dwI++;
 		}
+
+		//生产者信号量加1,继续生产
+		ReleaseSemaphore(ghSignalOfProducter, 1, NULL);
+
 		LeaveCriticalSection(&cs);
 	}
 	return 0;
@@ -127,6 +129,15 @@ DWORD WINAPI threadProOfControl(LPVOID lParameter) {
 		dwThreadNum++;
 	}
 
+	WaitForMultipleObjects(CustomerThreadNum, hCustomerThreads, TRUE, -1);
+	dwThreadNum = 0;
+	while (dwThreadNum < CustomerThreadNum)
+	{
+		CloseHandle(hCustomerThreads[dwThreadNum]);
+		dwThreadNum++;
+	}
+	ReleaseSemaphore(ghSignalOfProducter, 2, NULL);
+
 	//判断线程是否结束
 	WaitForMultipleObjects(ProducterThreadNum, hProducterThreads, TRUE, -1);
 	dwThreadNum = 0;
@@ -136,13 +147,6 @@ DWORD WINAPI threadProOfControl(LPVOID lParameter) {
 		dwThreadNum++;
 	}
 
-	WaitForMultipleObjects(CustomerThreadNum, hCustomerThreads, TRUE, -1);
-	dwThreadNum = 0;
-	while (dwThreadNum < CustomerThreadNum)
-	{
-		CloseHandle(hCustomerThreads[dwThreadNum]);
-		dwThreadNum++;
-	}
 	CloseHandle(ghSignalOfCustomer);
 	CloseHandle(ghSignalOfProducter);
 	DeleteCriticalSection(&cs);
@@ -159,13 +163,11 @@ INT_PTR CALLBACK winProcOfMain(
 	WPARAM wParam,
 	LPARAM lParam) 
 {
+	DWORD dwI = 0;
 	switch (uMsg)
 	{
 	case WM_CLOSE:
 	{
-		DeleteCriticalSection(&cs);
-		CloseHandle(ghSignalOfProducter);
-		CloseHandle(ghSignalOfCustomer);
 		EndDialog(hwnd, 0);
 		return TRUE;
 	}
@@ -203,6 +205,17 @@ INT_PTR CALLBACK winProcOfMain(
 			{
 				CloseHandle(CreateThread(NULL, 0, threadProOfControl, NULL, 0, NULL));
 			}
+			return TRUE;
+		}
+		case IDC_BUTTON_RESET: 
+		{
+			while (dwI < CustomerThreadNum)
+			{
+				SetWindowText(hEditOfCustomer[dwI], TEXT(""));
+				dwI++;
+			}
+			memset(ptCustomer, 0, sizeof ptCustomer);
+			memset(ptProducter, 0, sizeof ptProducter);
 			return TRUE;
 		}
 		}
