@@ -21,6 +21,8 @@ HWND hEditOfCustomer[CustomerThreadNum] = { 0 };		//消费者编辑框窗口句柄
 HANDLE hProducterThreads[ProducterThreadNum] = { 0 };	//生产者线程数组
 HANDLE hCustomerThreads[CustomerThreadNum] = { 0 };		//获消费者线程数组
 
+BOOL bCustomerThreadQuit = FALSE;
+
 //生产者线程
 DWORD WINAPI threadProOfProducter(LPVOID lParameter) {
 	//字符串取完线程结束
@@ -34,7 +36,11 @@ DWORD WINAPI threadProOfProducter(LPVOID lParameter) {
 		//判断字符串是否取完,线程结束条件
 		if (*ptStrPoint == '\0')
 		{
+			bCustomerThreadQuit = TRUE;
 			LeaveCriticalSection(&cs);
+
+			//避免消费者线程获取不到信号量卡死
+			ReleaseSemaphore(ghSignalOfCustomer, 4, NULL);
 			break;
 		}
 		//判断当前生产者字符中是否有字符
@@ -64,11 +70,12 @@ DWORD WINAPI threadProOfCustomer(LPVOID lParameter) {
 	DWORD dwI = 0;
 	while (1)
 	{
-		if (WaitForSingleObject(ghSignalOfCustomer, 2000) == WAIT_TIMEOUT)
+		/*if (WaitForSingleObject(ghSignalOfCustomer, 2000) == WAIT_TIMEOUT)
 		{
 			break;
-		}
-		//WaitForSingleObject(ghSignalOfCustomer, -1);
+		}*/
+		WaitForSingleObject(ghSignalOfCustomer, -1);
+		
 		EnterCriticalSection(&cs);
 
 		Sleep(50);
@@ -87,9 +94,6 @@ DWORD WINAPI threadProOfCustomer(LPVOID lParameter) {
 				ptProducter[dwI][0] = '\0';
 				//生产者编辑框置空
 				SetWindowText(hEditOfProducter[dwI], TEXT(""));
-
-				
-				
 				break;
 			}
 			dwI++;
@@ -97,8 +101,19 @@ DWORD WINAPI threadProOfCustomer(LPVOID lParameter) {
 
 		//生产者信号量加1,继续生产
 		ReleaseSemaphore(ghSignalOfProducter, 1, NULL);
-
 		LeaveCriticalSection(&cs);
+
+		//判断字符串是否取完,取完生产者线程信号量继续加1避免生产者线程获取不到信号卡死
+		if (*ptStrPoint == '\0')
+		{
+			ReleaseSemaphore(ghSignalOfProducter, 1, NULL);
+			break;
+		}
+
+
+		/*if (bCustomerThreadQuit)
+		{
+		}*/
 	}
 	return 0;
 }
@@ -129,6 +144,7 @@ DWORD WINAPI threadProOfControl(LPVOID lParameter) {
 		dwThreadNum++;
 	}
 
+	//释放消费者线程句柄
 	WaitForMultipleObjects(CustomerThreadNum, hCustomerThreads, TRUE, -1);
 	dwThreadNum = 0;
 	while (dwThreadNum < CustomerThreadNum)
@@ -136,7 +152,9 @@ DWORD WINAPI threadProOfControl(LPVOID lParameter) {
 		CloseHandle(hCustomerThreads[dwThreadNum]);
 		dwThreadNum++;
 	}
-	ReleaseSemaphore(ghSignalOfProducter, 2, NULL);
+
+	//生产者信号加2,防止得不到型号量线程不结束
+	//ReleaseSemaphore(ghSignalOfProducter, 2, NULL);
 
 	//判断线程是否结束
 	WaitForMultipleObjects(ProducterThreadNum, hProducterThreads, TRUE, -1);
